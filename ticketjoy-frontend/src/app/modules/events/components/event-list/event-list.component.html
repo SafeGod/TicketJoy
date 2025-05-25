@@ -1,0 +1,159 @@
+<div class="container mx-auto">
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Eventos</h1>
+        <p class="text-gray-600">Explora los eventos disponibles en el campus</p>
+      </div>
+      
+      <div *ngIf="isAdmin">
+        <a routerLink="/events/create" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Crear Evento
+        </a>
+      </div>
+    </div>
+  
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+      <svg class="animate-spin -ml-1 mr-3 h-10 w-10 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="text-lg">Cargando eventos...</span>
+    </div>
+  
+    <!-- Events listing -->
+    <div *ngIf="!isLoading" class="flex flex-col md:flex-row gap-6">
+      <!-- Filters sidebar -->
+      <div class="w-full md:w-64 bg-white p-4 rounded-lg shadow mb-6">
+        <h2 class="font-semibold text-lg mb-3">Filtros</h2>
+        
+        <!-- Search box -->
+        <div class="mb-4">
+          <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
+          <div class="relative rounded-md shadow-sm">
+            <input
+              type="text"
+              id="search"
+              class="focus:ring-primary-500 focus:border-primary-500 block w-full pl-3 pr-10 py-2 border-gray-300 rounded-md"
+              placeholder="Buscar eventos"
+              (input)="onSearch($event)"
+            >
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Categories filter -->
+        <div class="mb-4">
+          <h3 class="font-medium text-sm text-gray-700 mb-2">Categorías</h3>
+          <div class="space-y-2">
+            <div *ngFor="let category of categories" class="flex items-center">
+              <input 
+                type="checkbox"
+                [id]="'category-' + category.id"
+                class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                [checked]="selectedCategories.includes(category.id)"
+                (change)="toggleCategory(category.id)"
+              >
+              <label [for]="'category-' + category.id" class="ml-2 block text-sm text-gray-700">
+                {{ category.name }}
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Reset filters button -->
+        <button 
+          class="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50"
+          (click)="resetFilters()"
+        >
+          Limpiar filtros
+        </button>
+      </div>
+      
+      <!-- Events grid -->
+      <div class="flex-1">
+        <!-- No results message -->
+        <div *ngIf="filteredEvents.length === 0" class="bg-white p-8 rounded-lg shadow text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-gray-400 mb-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+          </svg>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No se encontraron eventos</h3>
+          <p class="text-gray-500 mb-4">Prueba con otros criterios de búsqueda o limpia los filtros.</p>
+          <button 
+            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
+            (click)="resetFilters()"
+          >
+            Ver todos los eventos
+          </button>
+        </div>
+        
+        <!-- Events grid -->
+        <div *ngIf="filteredEvents.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Event card -->
+          <div *ngFor="let event of filteredEvents" class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="h-48 bg-gray-300">
+              <img [src]="event.image" alt="{{ event.title }}" class="w-full h-full object-cover">
+            </div>
+            
+            <div class="p-4">
+              <!-- Categories -->
+              <div class="flex flex-wrap gap-2 mb-2">
+                <span *ngFor="let catId of event.categories" 
+                      class="px-2 py-1 text-xs font-medium rounded-full" 
+                      [ngClass]="'bg-' + getCategoryById(catId).color + '-100 text-' + getCategoryById(catId).color + '-800'">
+                  {{ getCategoryById(catId).name }}
+                </span>
+              </div>
+              
+              <h3 class="text-lg font-semibold mb-2">{{ event.title }}</h3>
+              
+              <p class="text-sm text-gray-600 mb-3 line-clamp-2">{{ event.description }}</p>
+              
+              <div class="text-sm text-gray-600 mb-3">
+                <div class="flex items-center mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                  </svg>
+                  {{ event.date | date:'medium' }}
+                </div>
+                
+                <div class="flex items-center mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                  </svg>
+                  {{ event.location }}
+                </div>
+                
+                <div class="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 01-.75.75h-.75m-6-1.5H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                  </svg>
+                  <span *ngIf="event.price > 0">{{ event.price | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+                  <span *ngIf="event.price === 0">Entrada Libre</span>
+                </div>
+              </div>
+              
+              <div class="flex justify-between items-center">
+                <span class="text-sm">
+                  <span *ngIf="event.availableTickets > 0">{{ event.availableTickets }} boletos disponibles</span>
+                  <span *ngIf="event.availableTickets === 0" class="text-red-600 font-medium">Agotado</span>
+                </span>
+                
+                <a [routerLink]="['/events', event.id]" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                  Ver Detalles
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

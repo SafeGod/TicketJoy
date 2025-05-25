@@ -1,0 +1,133 @@
+<div class="container mx-auto">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Mis Boletos</h1>
+      <p class="text-gray-600">Administra los boletos para los eventos que has adquirido</p>
+    </div>
+  
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+      <svg class="animate-spin -ml-1 mr-3 h-10 w-10 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="text-lg">Cargando boletos...</span>
+    </div>
+  
+    <!-- Tickets content -->
+    <div *ngIf="!isLoading">
+      <!-- Filter tabs -->
+      <div class="bg-white rounded-t-lg shadow-sm border-b">
+        <div class="flex overflow-x-auto">
+          <button 
+            class="px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 focus:outline-none"
+            [class.text-primary-600]="selectedStatus === 'all'"
+            [class.border-primary-600]="selectedStatus === 'all'"
+            [class.text-gray-500]="selectedStatus !== 'all'"
+            [class.border-transparent]="selectedStatus !== 'all'"
+            (click)="filterByStatus('all')">
+            Todos
+          </button>
+          <button 
+            class="px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 focus:outline-none"
+            [class.text-primary-600]="selectedStatus === 'confirmed'"
+            [class.border-primary-600]="selectedStatus === 'confirmed'"
+            [class.text-gray-500]="selectedStatus !== 'confirmed'"
+            [class.border-transparent]="selectedStatus !== 'confirmed'"
+            (click)="filterByStatus('confirmed')">
+            Confirmados
+          </button>
+          <button 
+            class="px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 focus:outline-none"
+            [class.text-primary-600]="selectedStatus === 'pending'"
+            [class.border-primary-600]="selectedStatus === 'pending'"
+            [class.text-gray-500]="selectedStatus !== 'pending'"
+            [class.border-transparent]="selectedStatus !== 'pending'"
+            (click)="filterByStatus('pending')">
+            Pendientes
+          </button>
+          <button 
+            class="px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 focus:outline-none"
+            [class.text-primary-600]="selectedStatus === 'used'"
+            [class.border-primary-600]="selectedStatus === 'used'"
+            [class.text-gray-500]="selectedStatus !== 'used'"
+            [class.border-transparent]="selectedStatus !== 'used'"
+            (click)="filterByStatus('used')">
+            Utilizados
+          </button>
+        </div>
+      </div>
+  
+      <!-- No tickets message -->
+      <div *ngIf="filteredTickets.length === 0" class="bg-white rounded-b-lg shadow-md p-8 text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-gray-400 mb-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No tienes boletos {{ selectedStatus !== 'all' ? 'con este estado' : '' }}</h3>
+        <p class="text-gray-500 mb-4">{{ selectedStatus !== 'all' ? 'Prueba seleccionando otro filtro.' : 'Explora eventos disponibles y obtén tus boletos.' }}</p>
+        <a routerLink="/events" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
+          Explorar eventos
+        </a>
+      </div>
+  
+      <!-- Tickets list -->
+      <div *ngIf="filteredTickets.length > 0" class="bg-white rounded-b-lg shadow-md divide-y divide-gray-200">
+        <!-- Ticket item -->
+        <div *ngFor="let ticket of filteredTickets" class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4">
+          <!-- Event info -->
+          <div class="md:col-span-3">
+            <h3 class="text-lg font-semibold mb-1">{{ ticket.eventTitle }}</h3>
+            
+            <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600 mb-3">
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                </svg>
+                {{ ticket.eventDate | date:'medium' }}
+              </div>
+              
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                </svg>
+                {{ ticket.eventLocation }}
+              </div>
+            </div>
+            
+            <div class="flex flex-wrap gap-4 items-center">
+              <div>
+                <span class="text-sm text-gray-600">Boleto:</span>
+                <span class="ml-1 font-medium">{{ ticket.ticketNumber }}</span>
+              </div>
+              
+              <div>
+                <span class="text-sm text-gray-600">Precio:</span>
+                <span class="ml-1 font-medium">
+                  {{ ticket.price > 0 ? (ticket.price | currency:'COP':'symbol-narrow':'1.0-0') : 'Gratis' }}
+                </span>
+              </div>
+              
+              <div>
+                <span class="text-sm text-gray-600">Comprado:</span>
+                <span class="ml-1 font-medium">{{ ticket.purchaseDate | date:'medium' }}</span>
+              </div>
+              
+              <div>
+                <span class="text-sm text-gray-600">Estado:</span>
+                <span class="ml-1 px-2 py-0.5 text-xs font-medium rounded-full" [ngClass]="getStatusClass(ticket.status)">
+                  {{ getStatusLabel(ticket.status) }}
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Actions -->
+          <div class="md:col-span-1 flex items-center justify-center md:justify-end">
+            <a [routerLink]="['/tickets', ticket.id]" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
+              Ver Detalles
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

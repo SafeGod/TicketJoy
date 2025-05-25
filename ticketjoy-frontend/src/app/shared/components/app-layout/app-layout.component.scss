@@ -1,0 +1,23 @@
+/* Layout component specific styles */
+:host {
+    display: block;
+    height: 100%;
+  }
+  
+  @media (max-width: 768px) {
+    main {
+      margin-left: 0 !important;
+    }
+  }
+  
+  .bg-primary-600 {
+    background-color: #2563eb;
+  }
+  
+  .bg-primary-500 {
+    background-color: #3b82f6;
+  }
+  
+  .text-fet {
+    color: #2563eb;
+  }
