@@ -1,6 +1,5 @@
-<?
+<?php
 
-// app/Models/Event.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,6 +15,7 @@ class Event extends Model
         'start_date',
         'end_date',
         'location',
+        'address',  // Nuevo campo
         'capacity',
         'price',
         'image',

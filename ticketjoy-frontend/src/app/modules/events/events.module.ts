@@ -1,4 +1,3 @@
-// events.module.ts
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
@@ -8,6 +7,11 @@ import { SharedModule } from '../../shared/shared.module';
 import { EventListComponent } from './components/event-list/event-list.component';
 import { EventDetailComponent } from './components/event-detail/event-detail.component';
 import { EventCreateComponent } from './components/event-create/event-create.component';
+
+// Servicios
+import { EventService } from '../../core/services/event.service';
+import { EventCategoryService } from '../../core/services/event-category.service';
+import { ImageService } from '../../core/services/image.service';
 
 const routes: Routes = [
   { path: '', component: EventListComponent },
@@ -24,9 +28,14 @@ const routes: Routes = [
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FormsModule, // Añade esta línea
+    FormsModule,
     RouterModule.forChild(routes),
     SharedModule
+  ],
+  providers: [
+    EventService,
+    EventCategoryService,
+    ImageService
   ]
 })
 export class EventsModule { }
