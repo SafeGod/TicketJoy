@@ -1,23 +1,136 @@
 /* Layout component specific styles */
 :host {
-    display: block;
-    height: 100%;
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Header fijo */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  height: 64px; /* Altura fija del header */
+}
+
+/* Contenedor principal */
+.main-container {
+  display: flex;
+  height: 100vh;
+  padding-top: 64px; /* Espacio para el header fijo */
+}
+
+/* Sidebar completo sin espacio arriba */
+aside {
+  position: fixed;
+  top: 64px; /* Empieza justo debajo del header */
+  left: 0;
+  height: calc(100vh - 64px); /* Altura completa menos el header */
+  width: 256px; /* w-64 = 16rem = 256px */
+  z-index: 10;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Sidebar oculto en móvil */
+aside.hidden {
+  transform: translateX(-100%);
+}
+
+/* Main content area */
+main {
+  flex: 1;
+  margin-left: 256px; /* Espacio para el sidebar */
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  main {
+    margin-left: 0 !important;
   }
   
-  @media (max-width: 768px) {
-    main {
-      margin-left: 0 !important;
-    }
+  aside {
+    transform: translateX(-100%);
   }
   
-  .bg-primary-600 {
-    background-color: #2563eb;
+  aside:not(.hidden) {
+    transform: translateX(0);
   }
-  
-  .bg-primary-500 {
-    background-color: #3b82f6;
+}
+
+/* Colores personalizados */
+.bg-primary-600 {
+  background-color: #2563eb;
+}
+
+.bg-primary-500 {
+  background-color: #3b82f6;
+}
+
+.text-fet {
+  color: #2563eb;
+}
+
+/* Smooth transitions for dropdown */
+.user-menu .transition-all {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Mobile sidebar overlay */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 5;
+  top: 64px; /* Debajo del header */
+}
+
+/* Active navigation item styling */
+a.router-link-active {
+  @apply bg-gray-900 text-white;
+}
+
+/* Dropdown animation */
+.scale-95 {
+  transform: scale(0.95);
+}
+
+.scale-100 {
+  transform: scale(1);
+}
+
+/* Scrollbar personalizado para el main content */
+main::-webkit-scrollbar {
+  width: 6px;
+}
+
+main::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+main::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+main::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Notification badge */
+.notification-badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
   }
-  
-  .text-fet {
-    color: #2563eb;
+  50% {
+    opacity: .8;
   }
+}

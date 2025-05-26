@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes, ExtraOptions } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
+import { AppLayoutComponent } from './shared/components/app-layout/app-layout.component';
 
 const routes: Routes = [
   {
@@ -8,30 +9,33 @@ const routes: Routes = [
     loadChildren: () => import('./modules/auth/auth.module').then(m => m.AuthModule)
   },
   {
-    path: 'dashboard',
-    loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'events',
-    loadChildren: () => import('./modules/events/events.module').then(m => m.EventsModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'tickets',
-    loadChildren: () => import('./modules/tickets/tickets.module').then(m => m.TicketsModule),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'admin',
-    loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule),
-    canActivate: [AuthGuard],
-    data: { roles: ['admin'] }
-  },
-  {
     path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full'
+    component: AppLayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: 'dashboard',
+        loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule)
+      },
+      {
+        path: 'events',
+        loadChildren: () => import('./modules/events/events.module').then(m => m.EventsModule)
+      },
+      {
+        path: 'tickets',
+        loadChildren: () => import('./modules/tickets/tickets.module').then(m => m.TicketsModule)
+      },
+      {
+        path: 'admin',
+        loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule),
+        data: { roles: ['admin'] }
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      }
+    ]
   },
   {
     path: '**',

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { AppLayoutComponent } from './components/app-layout/app-layout.component';
 
 @NgModule({
@@ -9,10 +10,13 @@ import { AppLayoutComponent } from './components/app-layout/app-layout.component
   ],
   imports: [
     CommonModule,
-    RouterModule
+    RouterModule,
+    FormsModule
   ],
   exports: [
-    AppLayoutComponent
+    AppLayoutComponent,
+    CommonModule,
+    FormsModule
   ]
 })
 export class SharedModule { }

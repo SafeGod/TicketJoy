@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../core/models/user.model';
@@ -12,6 +12,7 @@ export class AppLayoutComponent implements OnInit {
   currentUser: User | null = null;
   isAdmin = false;
   isSidebarCollapsed = false;
+  isUserMenuOpen = false;
   
   constructor(private authService: AuthService, private router: Router) { }
 
@@ -22,8 +23,21 @@ export class AppLayoutComponent implements OnInit {
     });
   }
 
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    // Cerrar el menú de usuario si se hace click fuera de él
+    const target = event.target as HTMLElement;
+    if (!target.closest('.user-menu')) {
+      this.isUserMenuOpen = false;
+    }
+  }
+
   toggleSidebar(): void {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
+  }
+
+  toggleUserMenu(): void {
+    this.isUserMenuOpen = !this.isUserMenuOpen;
   }
 
   logout(): void {
