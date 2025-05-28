@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { EventService } from '../../../../core/services/event.service';
+import { EventCategoryService } from '../../../../core/services/event-category.service';
+import { Event } from '../../../../core/models/event.model';
+import { EventCategory } from '../../../../core/models/event-category.model';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-event-list',
@@ -9,103 +15,102 @@ import { AuthService } from '../../../../core/services/auth.service';
 export class EventListComponent implements OnInit {
   isLoading = true;
   isAdmin = false;
-  categories = [
-    { id: 1, name: 'Conferencias', color: 'blue' },
-    { id: 2, name: 'Música', color: 'purple' },
-    { id: 3, name: 'Talleres', color: 'orange' },
-    { id: 4, name: 'Deportes', color: 'green' },
-    { id: 5, name: 'Cultura', color: 'red' }
-  ];
+  events: Event[] = [];
+  filteredEvents: Event[] = [];
+  categories: EventCategory[] = [];
   
   selectedCategories: number[] = [];
   searchTerm = '';
   
-  // Mock events data
-  events = [
-    {
-      id: 1,
-      title: 'Conferencia de Tecnología FET',
-      description: 'Descubre las últimas tendencias en tecnología con expertos del sector.',
-      image: 'https://ui-avatars.com/api/?name=Tech&background=random',
-      date: '2025-05-10T14:00:00',
-      endDate: '2025-05-10T18:00:00',
-      location: 'Auditorio Principal',
-      capacity: 200,
-      availableTickets: 45,
-      price: 0,
-      categories: [1, 3],
-      status: 'published'
-    },
-    {
-      id: 2,
-      title: 'Concierto Música Clásica',
-      description: 'Disfruta de una noche de música clásica con la orquesta de la universidad.',
-      image: 'https://ui-avatars.com/api/?name=Music&background=random',
-      date: '2025-05-15T19:00:00',
-      endDate: '2025-05-15T21:30:00',
-      location: 'Teatro FET',
-      capacity: 300,
-      availableTickets: 120,
-      price: 15000,
-      categories: [2, 5],
-      status: 'published'
-    },
-    {
-      id: 3,
-      title: 'Hackathon Desarrollo Web',
-      description: '24 horas para desarrollar soluciones innovadoras en equipos.',
-      image: 'https://ui-avatars.com/api/?name=Hack&background=random',
-      date: '2025-05-22T08:00:00',
-      endDate: '2025-05-23T08:00:00',
-      location: 'Laboratorio de Informática',
-      capacity: 50,
-      availableTickets: 10,
-      price: 5000,
-      categories: [1, 3],
-      status: 'published'
-    },
-    {
-      id: 4,
-      title: 'Torneo de Fútbol 5',
-      description: 'Participa en el torneo semestral de fútbol 5 de la universidad.',
-      image: 'https://ui-avatars.com/api/?name=Soccer&background=random',
-      date: '2025-05-25T09:00:00',
-      endDate: '2025-05-25T17:00:00',
-      location: 'Canchas Deportivas',
-      capacity: 100,
-      availableTickets: 40,
-      price: 10000,
-      categories: [4],
-      status: 'published'
-    },
-    {
-      id: 5,
-      title: 'Exposición de Arte',
-      description: 'Muestra de trabajos de estudiantes de la facultad de artes.',
-      image: 'https://ui-avatars.com/api/?name=Art&background=random',
-      date: '2025-06-05T10:00:00',
-      endDate: '2025-06-10T18:00:00',
-      location: 'Galería Central',
-      capacity: 150,
-      availableTickets: 150,
-      price: 0,
-      categories: [5],
-      status: 'published'
-    }
-  ];
+  // Pagination
+  currentPage = 1;
+  totalPages = 1;
+  totalEvents = 0;
   
-  filteredEvents: any[] = [];
-
-  constructor(private authService: AuthService) { }
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    private eventService: EventService,
+    private categoryService: EventCategoryService
+  ) { }
 
   ngOnInit(): void {
     this.isAdmin = this.authService.hasRole('admin');
     
-    // Simulate loading time
-    setTimeout(() => {
-      this.filteredEvents = [...this.events];
-      this.isLoading = false;
-    }, 1000);
+    // Load categories first, then events
+    this.loadCategories();
+    
+    // Check for query params (search, category)
+    this.route.queryParams.subscribe(params => {
+      if (params['search']) {
+        this.searchTerm = params['search'];
+      }
+      
+      if (params['category']) {
+        const categoryId = parseInt(params['category'], 10);
+        if (!isNaN(categoryId)) {
+          this.selectedCategories = [categoryId];
+        }
+      }
+      
+      // After processing query params, load events
+      this.loadEvents();
+    });
+  }
+  
+  loadCategories(): void {
+    this.categoryService.getCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+      }
+    });
+  }
+  
+  loadEvents(): void {
+    this.isLoading = true;
+    
+    // Prepare params for API request
+    const params: any = {
+      page: this.currentPage
+    };
+    
+    if (this.searchTerm) {
+      params.search = this.searchTerm;
+    }
+    
+    if (this.selectedCategories.length === 1) {
+      params.category = this.selectedCategories[0];
+    }
+    
+    this.eventService.getEvents(params)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          this.events = response.data;
+          this.filteredEvents = [...this.events];
+          
+          // Update pagination info
+          this.currentPage = response.meta.current_page;
+          this.totalPages = response.meta.last_page;
+          this.totalEvents = response.meta.total;
+        },
+        error: (error) => {
+          console.error('Error loading events:', error);
+        }
+      });
+  }
+  
+  // Método seguro para obtener available_tickets
+  getAvailableTickets(event: Event): number {
+    return event.available_tickets ?? 0;
   }
   
   toggleCategory(categoryId: number): void {
@@ -115,39 +120,68 @@ export class EventListComponent implements OnInit {
     } else {
       this.selectedCategories.push(categoryId);
     }
-    this.applyFilters();
+    
+    // Update URL with selected category
+    const queryParams: any = {};
+    if (this.selectedCategories.length === 1) {
+      queryParams.category = this.selectedCategories[0];
+    }
+    if (this.searchTerm) {
+      queryParams.search = this.searchTerm;
+    }
+    
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'merge'
+    });
+    
+    // Reload events with new filter
+    this.loadEvents();
   }
   
   onSearch(event: any): void {
     this.searchTerm = event.target.value.toLowerCase();
-    this.applyFilters();
-  }
-  
-  applyFilters(): void {
-    this.filteredEvents = this.events.filter(event => {
-      // Filter by search term
-      const matchesSearch = this.searchTerm ? 
-        event.title.toLowerCase().includes(this.searchTerm) || 
-        event.description.toLowerCase().includes(this.searchTerm) ||
-        event.location.toLowerCase().includes(this.searchTerm) : 
-        true;
-      
-      // Filter by category
-      const matchesCategory = this.selectedCategories.length > 0 ? 
-        this.selectedCategories.some(cat => event.categories.includes(cat)) : 
-        true;
-      
-      return matchesSearch && matchesCategory;
+    
+    // Update URL with search term
+    const queryParams: any = { search: this.searchTerm };
+    if (this.selectedCategories.length === 1) {
+      queryParams.category = this.selectedCategories[0];
+    }
+    
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      queryParamsHandling: 'merge'
     });
-  }
-  
-  getCategoryById(id: number): any {
-    return this.categories.find(cat => cat.id === id);
+    
+    // Reload events with new search
+    this.loadEvents();
   }
   
   resetFilters(): void {
     this.selectedCategories = [];
     this.searchTerm = '';
-    this.filteredEvents = [...this.events];
+    
+    // Clear URL params
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {}
+    });
+    
+    // Reload events without filters
+    this.loadEvents();
+  }
+  
+  getCategoryById(id: number): EventCategory | undefined {
+    return this.categories.find(cat => cat.id === id);
+  }
+  
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadEvents();
+    
+    // Scroll to top
+    window.scrollTo(0, 0);
   }
 }

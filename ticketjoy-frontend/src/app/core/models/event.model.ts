@@ -8,6 +8,8 @@ export interface Event {
   start_date: string;
   end_date: string;
   location: string;
+  // Añadimos el campo address que existe en el backend
+  address: string;
   capacity: number;
   price: number;
   image?: string;
@@ -17,5 +19,6 @@ export interface Event {
   updated_at?: string;
   categories?: EventCategory[];
   organizer?: User;
+  // Seguimos teniendo available_tickets como opcional pero lo manejaremos con cuidado
   available_tickets?: number;
 }

@@ -39,6 +39,7 @@
               id="search"
               class="focus:ring-primary-500 focus:border-primary-500 block w-full pl-3 pr-10 py-2 border-gray-300 rounded-md"
               placeholder="Buscar eventos"
+              [value]="searchTerm"
               (input)="onSearch($event)"
             >
             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -99,16 +100,21 @@
           <!-- Event card -->
           <div *ngFor="let event of filteredEvents" class="bg-white rounded-lg shadow-md overflow-hidden">
             <div class="h-48 bg-gray-300">
-              <img [src]="event.image" alt="{{ event.title }}" class="w-full h-full object-cover">
+              <img *ngIf="event.image" [src]="event.image" alt="{{ event.title }}" class="w-full h-full object-cover">
+              <div *ngIf="!event.image" class="w-full h-full flex items-center justify-center bg-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-gray-400">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                </svg>
+              </div>
             </div>
             
             <div class="p-4">
               <!-- Categories -->
               <div class="flex flex-wrap gap-2 mb-2">
-                <span *ngFor="let catId of event.categories" 
+                <span *ngFor="let category of event.categories" 
                       class="px-2 py-1 text-xs font-medium rounded-full" 
-                      [ngClass]="'bg-' + getCategoryById(catId).color + '-100 text-' + getCategoryById(catId).color + '-800'">
-                  {{ getCategoryById(catId).name }}
+                      [ngClass]="'bg-' + category.color + '-100 text-' + category.color + '-800'">
+                  {{ category.name }}
                 </span>
               </div>
               
@@ -121,7 +127,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                   </svg>
-                  {{ event.date | date:'medium' }}
+                  {{ event.start_date | date:'medium' }}
                 </div>
                 
                 <div class="flex items-center mb-1">
@@ -143,8 +149,8 @@
               
               <div class="flex justify-between items-center">
                 <span class="text-sm">
-                  <span *ngIf="event.availableTickets > 0">{{ event.availableTickets }} boletos disponibles</span>
-                  <span *ngIf="event.availableTickets === 0" class="text-red-600 font-medium">Agotado</span>
+                  <span *ngIf="getAvailableTickets(event) > 0">{{ getAvailableTickets(event) }} boletos disponibles</span>
+                  <span *ngIf="getAvailableTickets(event) <= 0" class="text-red-600 font-medium">Agotado</span>
                 </span>
                 
                 <a [routerLink]="['/events', event.id]" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
@@ -153,6 +159,48 @@
               </div>
             </div>
           </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div *ngIf="totalPages > 1" class="mt-6 flex justify-center">
+          <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <!-- Previous Page -->
+            <button 
+              [disabled]="currentPage === 1"
+              (click)="onPageChange(currentPage - 1)"
+              class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium"
+              [ngClass]="currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'"
+            >
+              <span class="sr-only">Anterior</span>
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            
+            <!-- Page numbers -->
+            <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
+              <button 
+                (click)="onPageChange(i + 1)"
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium"
+                [ngClass]="currentPage === i + 1 ? 'z-10 bg-primary-50 border-primary-500 text-primary-600' : 'bg-white text-gray-500 hover:bg-gray-50'"
+              >
+                {{ i + 1 }}
+              </button>
+            </ng-container>
+            
+            <!-- Next Page -->
+            <button 
+              [disabled]="currentPage === totalPages"
+              (click)="onPageChange(currentPage + 1)"
+              class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium"
+              [ngClass]="currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'"
+            >
+              <span class="sr-only">Siguiente</span>
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </nav>
         </div>
       </div>
     </div>
