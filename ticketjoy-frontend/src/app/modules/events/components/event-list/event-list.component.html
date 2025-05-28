@@ -14,6 +14,24 @@
         </a>
       </div>
     </div>
+
+    <!-- Error message -->
+    <div *ngIf="error && !isLoading" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
+        <span>{{ error }}</span>
+      </div>
+      <div class="mt-2">
+        <button 
+          (click)="refreshEvents()" 
+          class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded text-red-700 bg-red-100 hover:bg-red-200"
+        >
+          Reintentar
+        </button>
+      </div>
+    </div>
   
     <!-- Loading state -->
     <div *ngIf="isLoading" class="flex justify-center items-center py-12">
@@ -25,7 +43,7 @@
     </div>
   
     <!-- Events listing -->
-    <div *ngIf="!isLoading" class="flex flex-col md:flex-row gap-6">
+    <div *ngIf="!isLoading && !error" class="flex flex-col md:flex-row gap-6">
       <!-- Filters sidebar -->
       <div class="w-full md:w-64 bg-white p-4 rounded-lg shadow mb-6">
         <h2 class="font-semibold text-lg mb-3">Filtros</h2>
@@ -38,7 +56,7 @@
               type="text"
               id="search"
               class="focus:ring-primary-500 focus:border-primary-500 block w-full pl-3 pr-10 py-2 border-gray-300 rounded-md"
-              placeholder="Buscar eventos"
+              placeholder="Buscar eventos..."
               [value]="searchTerm"
               (input)="onSearch($event)"
             >
@@ -51,7 +69,7 @@
         </div>
         
         <!-- Categories filter -->
-        <div class="mb-4">
+        <div class="mb-4" *ngIf="categories.length > 0">
           <h3 class="font-medium text-sm text-gray-700 mb-2">Categorías</h3>
           <div class="space-y-2">
             <div *ngFor="let category of categories" class="flex items-center">
@@ -73,6 +91,7 @@
         <button 
           class="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50"
           (click)="resetFilters()"
+          *ngIf="selectedCategories.length > 0 || searchTerm"
         >
           Limpiar filtros
         </button>
@@ -80,19 +99,54 @@
       
       <!-- Events grid -->
       <div class="flex-1">
+        <!-- Admin notice for draft events -->
+        <div *ngIf="isAdmin && totalEvents === 0" class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-blue-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-blue-700">
+                <strong>Nota para administradores:</strong> Si has creado eventos y no aparecen aquí, puede ser que estén en estado "borrador". 
+                Para publicarlos, puedes usar el comando: <code class="bg-blue-100 px-1 rounded">php artisan events:publish --all</code>
+              </p>
+            </div>
+          </div>
+        </div>
+        
         <!-- No results message -->
-        <div *ngIf="filteredEvents.length === 0" class="bg-white p-8 rounded-lg shadow text-center">
+        <div *ngIf="filteredEvents.length === 0 && !isLoading" class="bg-white p-8 rounded-lg shadow text-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-gray-400 mb-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
           </svg>
-          <h3 class="text-lg font-medium text-gray-900 mb-2">No se encontraron eventos</h3>
-          <p class="text-gray-500 mb-4">Prueba con otros criterios de búsqueda o limpia los filtros.</p>
-          <button 
-            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
-            (click)="resetFilters()"
-          >
-            Ver todos los eventos
-          </button>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">
+            {{ searchTerm || selectedCategories.length > 0 ? 'No se encontraron eventos' : 'No hay eventos disponibles' }}
+          </h3>
+          <p class="text-gray-500 mb-4">
+            {{ searchTerm || selectedCategories.length > 0 
+              ? 'Prueba con otros criterios de búsqueda o limpia los filtros.' 
+              : 'Aún no hay eventos publicados. ¡Vuelve pronto!' }}
+          </p>
+          
+          <div class="space-x-3">
+            <button 
+              *ngIf="searchTerm || selectedCategories.length > 0"
+              class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
+              (click)="resetFilters()"
+            >
+              Ver todos los eventos
+            </button>
+            
+            <a 
+              *ngIf="isAdmin" 
+              routerLink="/events/create" 
+              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            >
+              Crear primer evento
+            </a>
+          </div>
         </div>
         
         <!-- Events grid -->
@@ -109,11 +163,23 @@
             </div>
             
             <div class="p-4">
+              <!-- Event status badge (for admin) -->
+              <div *ngIf="isAdmin && event.status !== 'published'" class="mb-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      [ngClass]="{
+                        'bg-yellow-100 text-yellow-800': event.status === 'draft',
+                        'bg-red-100 text-red-800': event.status === 'cancelled',
+                        'bg-gray-100 text-gray-800': event.status === 'completed'
+                      }">
+                  {{ getEventStatusLabel(event.status) }}
+                </span>
+              </div>
+              
               <!-- Categories -->
-              <div class="flex flex-wrap gap-2 mb-2">
+              <div class="flex flex-wrap gap-2 mb-2" *ngIf="event.categories && event.categories.length > 0">
                 <span *ngFor="let category of event.categories" 
                       class="px-2 py-1 text-xs font-medium rounded-full" 
-                      [ngClass]="'bg-' + category.color + '-100 text-' + category.color + '-800'">
+                      [ngClass]="'bg-' + (category.color || 'blue') + '-100 text-' + (category.color || 'blue') + '-800'">
                   {{ category.name }}
                 </span>
               </div>
@@ -149,8 +215,9 @@
               
               <div class="flex justify-between items-center">
                 <span class="text-sm">
-                  <span *ngIf="getAvailableTickets(event) > 0">{{ getAvailableTickets(event) }} boletos disponibles</span>
-                  <span *ngIf="getAvailableTickets(event) <= 0" class="text-red-600 font-medium">Agotado</span>
+                  <span *ngIf="isEventAvailable(event)">{{ getAvailableTickets(event) }} boletos disponibles</span>
+                  <span *ngIf="!isEventAvailable(event) && event.status === 'published'" class="text-red-600 font-medium">Agotado</span>
+                  <span *ngIf="event.status !== 'published'" class="text-yellow-600 font-medium">{{ getEventStatusLabel(event.status) }}</span>
                 </span>
                 
                 <a [routerLink]="['/events', event.id]" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">

@@ -27,6 +27,9 @@ export class EventListComponent implements OnInit {
   totalPages = 1;
   totalEvents = 0;
   
+  // Error handling
+  error = '';
+  
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -66,12 +69,14 @@ export class EventListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading categories:', error);
+        // No mostrar error por categorías, no es crítico
       }
     });
   }
   
   loadEvents(): void {
     this.isLoading = true;
+    this.error = '';
     
     // Prepare params for API request
     const params: any = {
@@ -94,23 +99,61 @@ export class EventListComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
-          this.events = response.data;
-          this.filteredEvents = [...this.events];
-          
-          // Update pagination info
-          this.currentPage = response.meta.current_page;
-          this.totalPages = response.meta.last_page;
-          this.totalEvents = response.meta.total;
+          if (response && response.data) {
+            this.events = response.data;
+            this.filteredEvents = [...this.events];
+            
+            // Update pagination info
+            this.currentPage = response.meta.current_page;
+            this.totalPages = response.meta.last_page;
+            this.totalEvents = response.meta.total;
+          } else {
+            // Handle case where response doesn't have expected structure
+            this.events = [];
+            this.filteredEvents = [];
+            this.totalEvents = 0;
+            this.totalPages = 1;
+            this.currentPage = 1;
+          }
         },
         error: (error) => {
           console.error('Error loading events:', error);
+          this.events = [];
+          this.filteredEvents = [];
+          
+          // Set appropriate error message
+          if (error.status === 0) {
+            this.error = 'No se pudo conectar al servidor. Verifica tu conexión a internet.';
+          } else if (error.status >= 500) {
+            this.error = 'Error interno del servidor. Por favor, intenta más tarde.';
+          } else if (error.status === 404) {
+            this.error = 'No se encontró el servicio de eventos.';
+          } else {
+            this.error = 'Error al cargar los eventos. Por favor, intenta de nuevo.';
+          }
         }
       });
   }
   
   // Método seguro para obtener available_tickets
   getAvailableTickets(event: Event): number {
-    return event.available_tickets ?? 0;
+    return event.available_tickets ?? event.capacity ?? 0;
+  }
+  
+  // Verifica si un evento está disponible para compra
+  isEventAvailable(event: Event): boolean {
+    return event.status === 'published' && this.getAvailableTickets(event) > 0;
+  }
+  
+  // Obtiene el estado del evento en español
+  getEventStatusLabel(status: string): string {
+    switch (status) {
+      case 'published': return 'Publicado';
+      case 'draft': return 'Borrador';
+      case 'cancelled': return 'Cancelado';
+      case 'completed': return 'Finalizado';
+      default: return 'Desconocido';
+    }
   }
   
   toggleCategory(categoryId: number): void {
@@ -136,7 +179,8 @@ export class EventListComponent implements OnInit {
       queryParamsHandling: 'merge'
     });
     
-    // Reload events with new filter
+    // Reset to first page and reload events
+    this.currentPage = 1;
     this.loadEvents();
   }
   
@@ -144,7 +188,10 @@ export class EventListComponent implements OnInit {
     this.searchTerm = event.target.value.toLowerCase();
     
     // Update URL with search term
-    const queryParams: any = { search: this.searchTerm };
+    const queryParams: any = {};
+    if (this.searchTerm) {
+      queryParams.search = this.searchTerm;
+    }
     if (this.selectedCategories.length === 1) {
       queryParams.category = this.selectedCategories[0];
     }
@@ -155,13 +202,15 @@ export class EventListComponent implements OnInit {
       queryParamsHandling: 'merge'
     });
     
-    // Reload events with new search
+    // Reset to first page and reload events
+    this.currentPage = 1;
     this.loadEvents();
   }
   
   resetFilters(): void {
     this.selectedCategories = [];
     this.searchTerm = '';
+    this.currentPage = 1;
     
     // Clear URL params
     this.router.navigate([], {
@@ -178,10 +227,17 @@ export class EventListComponent implements OnInit {
   }
   
   onPageChange(page: number): void {
-    this.currentPage = page;
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadEvents();
+      
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+  }
+  
+  // Método para recargar eventos
+  refreshEvents(): void {
     this.loadEvents();
-    
-    // Scroll to top
-    window.scrollTo(0, 0);
   }
 }

@@ -16,28 +16,36 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
-        $events = Event::with(['organizer', 'categories'])
-            ->when($request->has('category'), function ($query) use ($request) {
-                return $query->whereHas('categories', function ($q) use ($request) {
-                    $q->where('id', $request->category);
-                });
-            })
-            ->when($request->has('search'), function ($query) use ($request) {
-                $search = $request->search;
-                return $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%")
+        $query = Event::with(['organizer', 'categories']);
+        
+        // Si el usuario no está autenticado o no es admin, solo mostrar eventos publicados
+        $user = $request->user();
+        if (!$user || !$user->hasRole('admin')) {
+            $query->where('status', 'published');
+        }
+        
+        // Filtros
+        $query->when($request->has('category'), function ($q) use ($request) {
+            return $q->whereHas('categories', function ($query) use ($request) {
+                $query->where('id', $request->category);
+            });
+        })
+        ->when($request->has('search'), function ($q) use ($request) {
+            $search = $request->search;
+            return $q->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
                       ->orWhere('description', 'like', "%{$search}%")
                       ->orWhere('location', 'like', "%{$search}%");
-                });
-            })
-            ->orderBy('start_date', 'asc')
-            ->paginate(10);
+            });
+        })
+        ->orderBy('start_date', 'asc');
+        
+        $events = $query->paginate(10);
             
-        // Agregar número de boletos disponibles
-        $events->getCollection()->transform(function ($event) {
+        // Agregar número de boletos disponibles a cada evento
+        foreach ($events->items() as $event) {
             $event->available_tickets = $event->availableTickets();
-            return $event;
-        });
+        }
             
         return response()->json($events);
     }
@@ -50,13 +58,13 @@ class EventController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|min:5|max:255',
             'description' => 'required|string|min:20',
-            'start_date' => 'required|date',
+            'start_date' => 'required|date|after:now',
             'end_date' => 'required|date|after:start_date',
             'location' => 'required|string|max:255',
             'address' => 'required|string',
             'capacity' => 'required|integer|min:1',
             'price' => 'required|numeric|min:0',
-            'categories' => 'required|array',
+            'categories' => 'required|array|min:1',
             'categories.*' => 'exists:event_categories,id',
             'image' => 'nullable|string',
             'status' => 'nullable|in:draft,published,cancelled,completed'
@@ -67,7 +75,7 @@ class EventController extends Controller
         }
         
         // Verificar si el usuario tiene permiso para crear eventos
-        if (!$request->user()->hasPermission('event.create')) {
+        if (!$request->user()->hasPermission('event.create') && !$request->user()->hasRole('admin')) {
             return response()->json(['message' => 'No autorizado para crear eventos'], 403);
         }
         
@@ -82,7 +90,14 @@ class EventController extends Controller
         $event->capacity = $request->capacity;
         $event->price = $request->price;
         $event->image = $request->image ?? null;
-        $event->status = $request->status ?? 'draft';
+        
+        // Si es admin, permitir cambiar el estado, sino crear como draft
+        if ($request->user()->hasRole('admin')) {
+            $event->status = $request->status ?? 'draft';
+        } else {
+            $event->status = 'draft';
+        }
+        
         $event->organizer_id = $request->user()->id;
         $event->save();
         
@@ -91,15 +106,32 @@ class EventController extends Controller
             $event->categories()->attach($request->categories);
         }
         
-        return response()->json($event->load(['organizer', 'categories']), 201);
+        // Cargar relaciones y calcular boletos disponibles
+        $event->load(['organizer', 'categories']);
+        $event->available_tickets = $event->availableTickets();
+        
+        return response()->json($event, 201);
     }
 
     /**
      * Display the specified event.
      */
-    public function show(int $id)
+    public function show(Request $request, $id)
     {
-        $event = Event::with(['organizer', 'categories'])->findOrFail($id);
+        $event = Event::with(['organizer', 'categories'])->find($id);
+        
+        if (!$event) {
+            return response()->json(['message' => 'Evento no encontrado'], 404);
+        }
+        
+        // Si el evento no está publicado, solo el organizador y admin pueden verlo
+        $user = $request->user();
+        if ($event->status !== 'published') {
+            if (!$user || ($event->organizer_id !== $user->id && !$user->hasRole('admin'))) {
+                return response()->json(['message' => 'Evento no encontrado'], 404);
+            }
+        }
+        
         $event->available_tickets = $event->availableTickets();
         
         return response()->json($event);
@@ -108,9 +140,13 @@ class EventController extends Controller
     /**
      * Update the specified event in storage.
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, $id)
     {
-        $event = Event::findOrFail($id);
+        $event = Event::find($id);
+        
+        if (!$event) {
+            return response()->json(['message' => 'Evento no encontrado'], 404);
+        }
         
         // Verificar si el usuario es el organizador o tiene permisos
         if ($event->organizer_id !== $request->user()->id && !$request->user()->hasPermission('event.edit')) {
@@ -148,15 +184,22 @@ class EventController extends Controller
             $event->categories()->sync($request->categories);
         }
         
-        return response()->json($event->load(['organizer', 'categories']));
+        $event->load(['organizer', 'categories']);
+        $event->available_tickets = $event->availableTickets();
+        
+        return response()->json($event);
     }
 
     /**
      * Remove the specified event from storage.
      */
-    public function destroy(Request $request, int $id)
+    public function destroy(Request $request, $id)
     {
-        $event = Event::findOrFail($id);
+        $event = Event::find($id);
+        
+        if (!$event) {
+            return response()->json(['message' => 'Evento no encontrado'], 404);
+        }
         
         // Verificar si el usuario es el organizador o tiene permisos
         if ($event->organizer_id !== $request->user()->id && !$request->user()->hasPermission('event.delete')) {
@@ -171,9 +214,13 @@ class EventController extends Controller
     /**
      * Publish an event
      */
-    public function publish(Request $request, int $id)
+    public function publish(Request $request, $id)
     {
-        $event = Event::findOrFail($id);
+        $event = Event::find($id);
+        
+        if (!$event) {
+            return response()->json(['message' => 'Evento no encontrado'], 404);
+        }
         
         // Verificar si el usuario es el organizador o tiene permisos
         if ($event->organizer_id !== $request->user()->id && !$request->user()->hasPermission('event.publish')) {
@@ -183,15 +230,22 @@ class EventController extends Controller
         $event->status = 'published';
         $event->save();
         
-        return response()->json($event->load(['organizer', 'categories']));
+        $event->load(['organizer', 'categories']);
+        $event->available_tickets = $event->availableTickets();
+        
+        return response()->json($event);
     }
     
     /**
      * Cancel an event
      */
-    public function cancel(Request $request, int $id)
+    public function cancel(Request $request, $id)
     {
-        $event = Event::findOrFail($id);
+        $event = Event::find($id);
+        
+        if (!$event) {
+            return response()->json(['message' => 'Evento no encontrado'], 404);
+        }
         
         // Verificar si el usuario es el organizador o tiene permisos
         if ($event->organizer_id !== $request->user()->id && !$request->user()->hasPermission('event.edit')) {
@@ -201,6 +255,9 @@ class EventController extends Controller
         $event->status = 'cancelled';
         $event->save();
         
-        return response()->json($event->load(['organizer', 'categories']));
+        $event->load(['organizer', 'categories']);
+        $event->available_tickets = $event->availableTickets();
+        
+        return response()->json($event);
     }
 }

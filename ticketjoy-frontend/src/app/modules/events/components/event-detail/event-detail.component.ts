@@ -15,9 +15,11 @@ export class EventDetailComponent implements OnInit {
   eventId: number = 0;
   isLoading = true;
   isAdmin = false;
+  isOrganizer = false;
   ticketQuantity = 1;
   isPurchasing = false;
   purchaseError = '';
+  error = '';
   event: Event | null = null;
   
   constructor(
@@ -42,6 +44,7 @@ export class EventDetailComponent implements OnInit {
   
   loadEventDetails(): void {
     this.isLoading = true;
+    this.error = '';
     
     this.eventService.getEvent(this.eventId)
       .pipe(
@@ -53,6 +56,10 @@ export class EventDetailComponent implements OnInit {
         next: (event) => {
           this.event = event;
           
+          // Check if current user is the organizer
+          const currentUser = this.authService.currentUser;
+          this.isOrganizer = currentUser?.id === event.organizer_id;
+          
           // Reset ticket quantity to 1 or max available
           this.ticketQuantity = 1;
           
@@ -62,9 +69,16 @@ export class EventDetailComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error loading event details:', error);
-          // If event not found or error, navigate back to events list
+          
+          // Set appropriate error message
           if (error.status === 404) {
-            this.router.navigate(['/events']);
+            this.error = 'El evento no existe o no tienes permisos para verlo.';
+          } else if (error.status === 0) {
+            this.error = 'No se pudo conectar al servidor. Verifica tu conexión a internet.';
+          } else if (error.status >= 500) {
+            this.error = 'Error interno del servidor. Por favor, intenta más tarde.';
+          } else {
+            this.error = 'Error al cargar el evento. Por favor, intenta de nuevo.';
           }
         }
       });
@@ -72,7 +86,7 @@ export class EventDetailComponent implements OnInit {
   
   // Método seguro para obtener available_tickets
   getAvailableTickets(): number {
-    return this.event?.available_tickets ?? 0;
+    return this.event?.available_tickets ?? this.event?.capacity ?? 0;
   }
   
   // Verifica si el evento está agotado
@@ -82,12 +96,42 @@ export class EventDetailComponent implements OnInit {
   
   // Verifica si se pueden comprar boletos
   canPurchaseTickets(): boolean {
-    return this.event?.status === 'published' && this.getAvailableTickets() > 0;
+    return this.event?.status === 'published' && 
+           this.getAvailableTickets() > 0 &&
+           !this.isEventExpired();
+  }
+  
+  // Verifica si el evento ya expiró
+  isEventExpired(): boolean {
+    if (!this.event) return false;
+    const eventDate = new Date(this.event.start_date);
+    return eventDate < new Date();
   }
   
   // Verifica si se alcanzó la cantidad máxima de boletos
   isMaxQuantityReached(): boolean {
     return this.ticketQuantity >= this.getAvailableTickets();
+  }
+  
+  // Obtiene el estado del evento en español
+  getEventStatusLabel(status: string): string {
+    switch (status) {
+      case 'published': return 'Publicado';
+      case 'draft': return 'Borrador';
+      case 'cancelled': return 'Cancelado';
+      case 'completed': return 'Finalizado';
+      default: return 'Desconocido';
+    }
+  }
+  
+  // Puede editar el evento si es admin o es el organizador
+  canEditEvent(): boolean {
+    return this.isAdmin || this.isOrganizer;
+  }
+  
+  // Puede publicar el evento si es admin o es el organizador y está en draft
+  canPublishEvent(): boolean {
+    return (this.isAdmin || this.isOrganizer) && this.event?.status === 'draft';
   }
   
   increaseQuantity(): void {
@@ -149,8 +193,24 @@ export class EventDetailComponent implements OnInit {
   }
   
   editEvent(): void {
-    if (!this.event) return;
+    if (!this.event || !this.canEditEvent()) return;
     this.router.navigate(['/events/edit', this.event.id]);
+  }
+  
+  publishEvent(): void {
+    if (!this.event || !this.canPublishEvent()) return;
+    
+    this.eventService.publishEvent(this.event.id)
+      .subscribe({
+        next: (updatedEvent) => {
+          this.event = updatedEvent;
+          // Show success message or notification
+        },
+        error: (error) => {
+          console.error('Error publishing event:', error);
+          this.error = 'Error al publicar el evento. Por favor, intenta de nuevo.';
+        }
+      });
   }
   
   formatEventDate(dateString: string): string {
@@ -163,5 +223,10 @@ export class EventDetailComponent implements OnInit {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+  
+  // Método para recargar el evento
+  refreshEvent(): void {
+    this.loadEventDetails();
   }
 }
