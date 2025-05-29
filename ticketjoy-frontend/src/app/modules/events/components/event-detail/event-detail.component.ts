@@ -20,6 +20,7 @@ export class EventDetailComponent implements OnInit {
   isPurchasing = false;
   purchaseError = '';
   error = '';
+  successMessage = '';
   event: Event | null = null;
   
   constructor(
@@ -38,6 +39,17 @@ export class EventDetailComponent implements OnInit {
       this.router.navigate(['/events']);
       return;
     }
+
+    // Check for success message from query params
+    this.route.queryParams.subscribe(params => {
+      if (params['message']) {
+        this.successMessage = params['message'];
+        // Clear the message after 5 seconds
+        setTimeout(() => {
+          this.clearSuccessMessage();
+        }, 5000);
+      }
+    });
     
     this.loadEventDetails();
   }
@@ -257,5 +269,14 @@ export class EventDetailComponent implements OnInit {
   // Método para recargar el evento
   refreshEvent(): void {
     this.loadEventDetails();
+  }
+
+  clearSuccessMessage(): void {
+    this.successMessage = '';
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { message: null },
+      queryParamsHandling: 'merge'
+    });
   }
 }
