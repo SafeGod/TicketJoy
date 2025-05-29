@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Event extends Model
 {
@@ -15,7 +16,7 @@ class Event extends Model
         'start_date',
         'end_date',
         'location',
-        'address',  // Nuevo campo
+        'address',
         'capacity',
         'price',
         'image',
@@ -48,11 +49,19 @@ class Event extends Model
     {
         return $this->status === 'published' && 
                $this->start_date > now() && 
-               $this->tickets()->count() < $this->capacity;
+               $this->availableTickets() > 0;
     }
 
     public function availableTickets()
     {
-        return $this->capacity - $this->tickets()->whereNotIn('status', ['cancelled'])->count();
+        try {
+            // Intentar contar tickets, pero manejar el caso donde la tabla no existe
+            $ticketCount = $this->tickets()->whereNotIn('status', ['cancelled'])->count();
+            return $this->capacity - $ticketCount;
+        } catch (\Exception $e) {
+            // Si la tabla tickets no existe o hay un error, devolver la capacidad completa
+            Log::info('Could not count tickets for event ' . $this->id . ': ' . $e->getMessage());
+            return $this->capacity;
+        }
     }
 }

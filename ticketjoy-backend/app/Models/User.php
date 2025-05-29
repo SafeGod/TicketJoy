@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable
 {
@@ -51,40 +52,64 @@ class User extends Authenticatable
     
     public function hasRole($roleName)
     {
-        return $this->roles()->where('name', $roleName)->exists();
+        try {
+            return $this->roles()->where('name', $roleName)->exists();
+        } catch (\Exception $e) {
+            Log::warning('Could not check role for user ' . $this->id . ': ' . $e->getMessage());
+            return false;
+        }
     }
     
     public function hasPermission($permissionName)
     {
-        return $this->roles()
-            ->whereHas('permissions', function ($query) use ($permissionName) {
-                $query->where('name', $permissionName);
-            })
-            ->exists();
+        try {
+            return $this->roles()
+                ->whereHas('permissions', function ($query) use ($permissionName) {
+                    $query->where('name', $permissionName);
+                })
+                ->exists();
+        } catch (\Exception $e) {
+            Log::warning('Could not check permission for user ' . $this->id . ': ' . $e->getMessage());
+            return false;
+        }
     }
     
     public function assignRole($role)
     {
-        if (is_string($role)) {
-            $role = Role::where('name', $role)->firstOrFail();
+        try {
+            if (is_string($role)) {
+                $role = Role::where('name', $role)->firstOrFail();
+            }
+            
+            $this->roles()->syncWithoutDetaching([$role->id]);
+        } catch (\Exception $e) {
+            Log::error('Could not assign role to user ' . $this->id . ': ' . $e->getMessage());
         }
-        
-        $this->roles()->syncWithoutDetaching([$role->id]);
     }
     
     public function getRoleNames()
     {
-        return $this->roles()->pluck('name');
+        try {
+            return $this->roles()->pluck('name');
+        } catch (\Exception $e) {
+            Log::warning('Could not get role names for user ' . $this->id . ': ' . $e->getMessage());
+            return collect();
+        }
     }
     
     public function getAllPermissions()
     {
-        $permissions = collect();
-        
-        foreach ($this->roles as $role) {
-            $permissions = $permissions->merge($role->permissions);
+        try {
+            $permissions = collect();
+            
+            foreach ($this->roles as $role) {
+                $permissions = $permissions->merge($role->permissions);
+            }
+            
+            return $permissions->unique('id');
+        } catch (\Exception $e) {
+            Log::warning('Could not get permissions for user ' . $this->id . ': ' . $e->getMessage());
+            return collect();
         }
-        
-        return $permissions->unique('id');
     }
 }

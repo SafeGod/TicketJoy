@@ -99,16 +99,33 @@ export class EventListComponent implements OnInit {
       )
       .subscribe({
         next: (response) => {
+          // Manejar diferentes estructuras de respuesta
           if (response && response.data) {
+            // Respuesta paginada de Laravel
             this.events = response.data;
             this.filteredEvents = [...this.events];
             
-            // Update pagination info
-            this.currentPage = response.meta.current_page;
-            this.totalPages = response.meta.last_page;
-            this.totalEvents = response.meta.total;
+            // Update pagination info de manera segura
+            if (response.meta) {
+              this.currentPage = response.meta.current_page || 1;
+              this.totalPages = response.meta.last_page || 1;
+              this.totalEvents = response.meta.total || 0;
+            } else {
+              // Si no hay meta, asumir página única
+              this.currentPage = 1;
+              this.totalPages = 1;
+              this.totalEvents = this.events.length;
+            }
+          } else if (Array.isArray(response)) {
+            // Respuesta directa como array
+            this.events = response;
+            this.filteredEvents = [...this.events];
+            this.currentPage = 1;
+            this.totalPages = 1;
+            this.totalEvents = this.events.length;
           } else {
             // Handle case where response doesn't have expected structure
+            console.warn('Unexpected response structure:', response);
             this.events = [];
             this.filteredEvents = [];
             this.totalEvents = 0;
