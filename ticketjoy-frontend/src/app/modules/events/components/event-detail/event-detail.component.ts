@@ -192,11 +192,6 @@ export class EventDetailComponent implements OnInit {
       });
   }
   
-  editEvent(): void {
-    if (!this.event || !this.canEditEvent()) return;
-    this.router.navigate(['/events/edit', this.event.id]);
-  }
-  
   publishEvent(): void {
     if (!this.event || !this.canPublishEvent()) return;
     
@@ -209,6 +204,40 @@ export class EventDetailComponent implements OnInit {
         error: (error) => {
           console.error('Error publishing event:', error);
           this.error = 'Error al publicar el evento. Por favor, intenta de nuevo.';
+        }
+      });
+  }
+  
+  editEvent(): void {
+    if (!this.event || !this.canEditEvent()) return;
+    this.router.navigate(['/events/edit', this.event.id]);
+  }
+  
+  deleteEvent(): void {
+    if (!this.event || !this.canEditEvent()) return;
+    
+    const confirmDelete = confirm(
+      `¿Estás seguro de que quieres eliminar el evento "${this.event.title}"?\n\n` +
+      'Esta acción no se puede deshacer y se eliminarán todos los boletos asociados.'
+    );
+    
+    if (!confirmDelete) return;
+    
+    this.eventService.deleteEvent(this.event.id)
+      .subscribe({
+        next: () => {
+          // Redirect to events list with success message
+          this.router.navigate(['/events'], {
+            queryParams: { message: 'Evento eliminado correctamente' }
+          });
+        },
+        error: (error) => {
+          console.error('Error deleting event:', error);
+          if (error.error && error.error.message) {
+            this.error = error.error.message;
+          } else {
+            this.error = 'Error al eliminar el evento. Por favor, intenta de nuevo.';
+          }
         }
       });
   }

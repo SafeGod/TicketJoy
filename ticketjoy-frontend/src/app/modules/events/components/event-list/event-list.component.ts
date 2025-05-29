@@ -18,18 +18,20 @@ export class EventListComponent implements OnInit {
   events: Event[] = [];
   filteredEvents: Event[] = [];
   categories: EventCategory[] = [];
-  
+
   selectedCategories: number[] = [];
   searchTerm = '';
-  
+
+  successMessage = '';
+
   // Pagination
   currentPage = 1;
   totalPages = 1;
   totalEvents = 0;
-  
+
   // Error handling
   error = '';
-  
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -40,28 +42,35 @@ export class EventListComponent implements OnInit {
 
   ngOnInit(): void {
     this.isAdmin = this.authService.hasRole('admin');
-    
+
     // Load categories first, then events
     this.loadCategories();
-    
+
     // Check for query params (search, category)
     this.route.queryParams.subscribe(params => {
       if (params['search']) {
         this.searchTerm = params['search'];
       }
-      
+
       if (params['category']) {
         const categoryId = parseInt(params['category'], 10);
         if (!isNaN(categoryId)) {
           this.selectedCategories = [categoryId];
         }
       }
-      
+
+      if (params['message']) {
+        this.successMessage = params['message'];
+        setTimeout(() => {
+          this.clearSuccessMessage();
+        }, 5000);
+      }
+
       // After processing query params, load events
       this.loadEvents();
     });
   }
-  
+
   loadCategories(): void {
     this.categoryService.getCategories().subscribe({
       next: (categories) => {
@@ -73,24 +82,24 @@ export class EventListComponent implements OnInit {
       }
     });
   }
-  
+
   loadEvents(): void {
     this.isLoading = true;
     this.error = '';
-    
+
     // Prepare params for API request
     const params: any = {
       page: this.currentPage
     };
-    
+
     if (this.searchTerm) {
       params.search = this.searchTerm;
     }
-    
+
     if (this.selectedCategories.length === 1) {
       params.category = this.selectedCategories[0];
     }
-    
+
     this.eventService.getEvents(params)
       .pipe(
         finalize(() => {
@@ -104,7 +113,7 @@ export class EventListComponent implements OnInit {
             // Respuesta paginada de Laravel
             this.events = response.data;
             this.filteredEvents = [...this.events];
-            
+
             // Update pagination info de manera segura
             if (response.meta) {
               this.currentPage = response.meta.current_page || 1;
@@ -137,7 +146,7 @@ export class EventListComponent implements OnInit {
           console.error('Error loading events:', error);
           this.events = [];
           this.filteredEvents = [];
-          
+
           // Set appropriate error message
           if (error.status === 0) {
             this.error = 'No se pudo conectar al servidor. Verifica tu conexión a internet.';
@@ -151,17 +160,17 @@ export class EventListComponent implements OnInit {
         }
       });
   }
-  
+
   // Método seguro para obtener available_tickets
   getAvailableTickets(event: Event): number {
     return event.available_tickets ?? event.capacity ?? 0;
   }
-  
+
   // Verifica si un evento está disponible para compra
   isEventAvailable(event: Event): boolean {
     return event.status === 'published' && this.getAvailableTickets(event) > 0;
   }
-  
+
   // Obtiene el estado del evento en español
   getEventStatusLabel(status: string): string {
     switch (status) {
@@ -172,7 +181,7 @@ export class EventListComponent implements OnInit {
       default: return 'Desconocido';
     }
   }
-  
+
   toggleCategory(categoryId: number): void {
     const index = this.selectedCategories.indexOf(categoryId);
     if (index > -1) {
@@ -180,7 +189,7 @@ export class EventListComponent implements OnInit {
     } else {
       this.selectedCategories.push(categoryId);
     }
-    
+
     // Update URL with selected category
     const queryParams: any = {};
     if (this.selectedCategories.length === 1) {
@@ -189,21 +198,21 @@ export class EventListComponent implements OnInit {
     if (this.searchTerm) {
       queryParams.search = this.searchTerm;
     }
-    
+
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
       queryParamsHandling: 'merge'
     });
-    
+
     // Reset to first page and reload events
     this.currentPage = 1;
     this.loadEvents();
   }
-  
+
   onSearch(event: any): void {
     this.searchTerm = event.target.value.toLowerCase();
-    
+
     // Update URL with search term
     const queryParams: any = {};
     if (this.searchTerm) {
@@ -212,49 +221,58 @@ export class EventListComponent implements OnInit {
     if (this.selectedCategories.length === 1) {
       queryParams.category = this.selectedCategories[0];
     }
-    
+
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams,
       queryParamsHandling: 'merge'
     });
-    
+
     // Reset to first page and reload events
     this.currentPage = 1;
     this.loadEvents();
   }
-  
+
   resetFilters(): void {
     this.selectedCategories = [];
     this.searchTerm = '';
     this.currentPage = 1;
-    
+
     // Clear URL params
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {}
     });
-    
+
     // Reload events without filters
     this.loadEvents();
   }
-  
+
   getCategoryById(id: number): EventCategory | undefined {
     return this.categories.find(cat => cat.id === id);
   }
-  
+
   onPageChange(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       this.loadEvents();
-      
+
       // Scroll to top
       window.scrollTo(0, 0);
     }
   }
-  
+
   // Método para recargar eventos
   refreshEvents(): void {
     this.loadEvents();
+  }
+
+  clearSuccessMessage(): void {
+    this.successMessage = '';
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { message: null },
+      queryParamsHandling: 'merge'
+    });
   }
 }

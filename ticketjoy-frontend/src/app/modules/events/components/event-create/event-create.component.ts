@@ -151,7 +151,7 @@ export class EventCreateComponent implements OnInit {
     // Preparar los datos del formulario
     const eventData = {
       ...this.eventForm.value,
-      status: 'draft' // Por defecto, el evento se crea como borrador
+      status: 'published'
     };
     
     // Llamar al servicio para crear el evento
