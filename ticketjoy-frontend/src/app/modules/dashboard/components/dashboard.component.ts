@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
+import { EventService } from '../../../core/services/event.service';
 import { User } from '../../../core/models/user.model';
+import { Event } from '../../../core/models/event.model';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,45 +13,17 @@ import { User } from '../../../core/models/user.model';
 export class DashboardComponent implements OnInit {
   currentUser: User | null = null;
   isLoading = true;
+  isLoadingEvents = true;
   stats = {
     upcomingEvents: 0,
     myTickets: 0,
     myEvents: 0
   };
   
-  // Mock upcoming events
-  upcomingEvents = [
-    {
-      id: 1,
-      title: 'Conferencia de Tecnología FET',
-      image: 'https://ui-avatars.com/api/?name=Tech&background=random',
-      date: '2025-05-10T14:00:00',
-      location: 'Auditorio Principal',
-      capacity: 200,
-      availableTickets: 45,
-      price: 0
-    },
-    {
-      id: 2,
-      title: 'Concierto Música Clásica',
-      image: 'https://ui-avatars.com/api/?name=Music&background=random',
-      date: '2025-05-15T19:00:00',
-      location: 'Teatro FET',
-      capacity: 300,
-      availableTickets: 120
-    },
-    {
-      id: 3,
-      title: 'Hackathon Desarrollo Web',
-      image: 'https://ui-avatars.com/api/?name=Hack&background=random',
-      date: '2025-05-22T08:00:00',
-      location: 'Laboratorio de Informática',
-      capacity: 50,
-      availableTickets: 10
-    }
-  ];
+  // Real upcoming events from backend
+  upcomingEvents: Event[] = [];
   
-  // Mock recent tickets
+  // Mock recent tickets (you can replace this later with real ticket service)
   recentTickets = [
     {
       id: 101,
@@ -66,21 +41,74 @@ export class DashboardComponent implements OnInit {
     }
   ];
 
-  constructor(public authService: AuthService) { }
+  constructor(
+    public authService: AuthService,
+    private eventService: EventService
+  ) { }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
-      
-      // Simulate loading time
-      setTimeout(() => {
-        this.stats = {
-          upcomingEvents: this.upcomingEvents.length,
-          myTickets: this.recentTickets.length,
-          myEvents: this.authService.hasRole('admin') ? 5 : 0
-        };
-        this.isLoading = false;
-      }, 1000);
+      this.loadDashboardData();
     });
+  }
+  
+  loadDashboardData(): void {
+    this.isLoading = true;
+    this.isLoadingEvents = true;
+    
+    // Load upcoming events (limit to first 3)
+    this.eventService.getEvents({ limit: 3 })
+      .pipe(
+        finalize(() => {
+          this.isLoadingEvents = false;
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          // Handle different response structures
+          if (response && response.data && Array.isArray(response.data)) {
+            // Laravel paginated response
+            this.upcomingEvents = response.data.slice(0, 3);
+            this.stats.upcomingEvents = response.meta?.total || response.data.length;
+          } else if (Array.isArray(response)) {
+            // Direct array response
+            this.upcomingEvents = response.slice(0, 3);
+            this.stats.upcomingEvents = response.length;
+          } else {
+            console.warn('Unexpected events response structure:', response);
+            this.upcomingEvents = [];
+            this.stats.upcomingEvents = 0;
+          }
+          
+          // Finalize stats and loading
+          this.finalizeStats();
+        },
+        error: (error) => {
+          console.error('Error loading events for dashboard:', error);
+          this.upcomingEvents = [];
+          this.stats.upcomingEvents = 0;
+          this.finalizeStats();
+        }
+      });
+  }
+  
+  private finalizeStats(): void {
+    // Set other stats (keeping mock data for now, replace with real services later)
+    this.stats.myTickets = this.recentTickets.length;
+    this.stats.myEvents = this.authService.hasRole('admin') ? 
+      (this.authService.hasRole('organizer') ? Math.ceil(this.stats.upcomingEvents / 2) : this.stats.upcomingEvents) : 0;
+    
+    this.isLoading = false;
+  }
+  
+  // Helper method to get available tickets safely
+  getAvailableTickets(event: Event): number {
+    return event.available_tickets ?? event.capacity ?? 0;
+  }
+  
+  // Helper method to check if event has image
+  getEventImage(event: Event): string {
+    return event.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(event.title.split(' ')[0])}&background=random`;
   }
 }

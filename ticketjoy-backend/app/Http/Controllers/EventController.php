@@ -45,6 +45,36 @@ class EventController extends Controller
             
             $query->orderBy('start_date', 'asc');
             
+            // Check if limit parameter is provided (for dashboard)
+            if ($request->has('limit')) {
+                $limit = min((int) $request->limit, 50); // Max 50 events
+                $events = $query->limit($limit)->get();
+                
+                // Add additional info to each event
+                foreach ($events as $event) {
+                    $event->available_tickets = $event->capacity;
+                    
+                    // Load relations if available
+                    try {
+                        $event->load('organizer', 'categories');
+                    } catch (\Exception $e) {
+                        Log::warning('Could not load event relations: ' . $e->getMessage());
+                    }
+                }
+                
+                // Return simple structure for dashboard
+                return response()->json([
+                    'data' => $events,
+                    'meta' => [
+                        'total' => Event::where($isAdmin ? '' : 'status', $isAdmin ? '' : 'published')->count(),
+                        'current_page' => 1,
+                        'per_page' => $limit,
+                        'last_page' => 1
+                    ]
+                ]);
+            }
+            
+            // Normal pagination for event list
             $events = $query->paginate(10);
             
             // Agregar información adicional a cada evento
