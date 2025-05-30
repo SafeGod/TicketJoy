@@ -55,8 +55,11 @@ class AuthController extends Controller
         // Crear token para el usuario
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        // Retornar los mismos datos que en login
         return response()->json([
             'user' => $user,
+            'roles' => $user->getRoleNames(),
+            'permissions' => $user->getAllPermissions()->pluck('name'),
             'access_token' => $token,
             'token_type' => 'Bearer',
         ], 201);

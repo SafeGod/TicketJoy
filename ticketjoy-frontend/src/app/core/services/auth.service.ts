@@ -43,15 +43,17 @@ export class AuthService {
         this.currentUserSubject.next(JSON.parse(userData));
       }
   
-      if (roles) {
-        this.rolesSubject.next(JSON.parse(roles));
+      if (roles && roles !== 'undefined') {
+        const parsedRoles = JSON.parse(roles);
+        this.rolesSubject.next(Array.isArray(parsedRoles) ? parsedRoles : []);
       }
   
-      if (permissions) {
-        this.permissionsSubject.next(JSON.parse(permissions));
+      if (permissions && permissions !== 'undefined') {
+        const parsedPermissions = JSON.parse(permissions);
+        this.permissionsSubject.next(Array.isArray(parsedPermissions) ? parsedPermissions : []);
       }
   
-      if (token) {
+      if (token && token !== 'null') {
         this.tokenSubject.next(token);
       }
     } catch (error) {
@@ -102,15 +104,18 @@ export class AuthService {
   }
 
   private handleAuthResponse(response: AuthResponse): void {
+    const roles = Array.isArray(response.roles) ? response.roles : [];
+    const permissions = Array.isArray(response.permissions) ? response.permissions : [];
+
     localStorage.setItem('user', JSON.stringify(response.user));
     localStorage.setItem('token', response.access_token);
-    localStorage.setItem('roles', JSON.stringify(response.roles));
-    localStorage.setItem('permissions', JSON.stringify(response.permissions));
+    localStorage.setItem('roles', JSON.stringify(roles));
+    localStorage.setItem('permissions', JSON.stringify(permissions));
 
     this.currentUserSubject.next(response.user);
     this.tokenSubject.next(response.access_token);
-    this.rolesSubject.next(response.roles);
-    this.permissionsSubject.next(response.permissions);
+    this.rolesSubject.next(roles);
+    this.permissionsSubject.next(permissions);
   }
 
   private clearAuthData(): void {
@@ -128,12 +133,14 @@ export class AuthService {
 
   hasRole(role: string): boolean {
     const roles = this.rolesSubject.value;
-    return roles.includes(role);
+    // Verificar que roles sea un array antes de usar includes
+    return Array.isArray(roles) && roles.includes(role);
   }
 
   hasPermission(permission: string): boolean {
     const permissions = this.permissionsSubject.value;
-    return permissions.includes(permission);
+    // Verificar que permissions sea un array antes de usar includes
+    return Array.isArray(permissions) && permissions.includes(permission);
   }
 
   get isLoggedIn(): boolean {
