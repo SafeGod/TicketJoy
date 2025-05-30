@@ -48,8 +48,8 @@
           [class.transform]="true"
         >
           <div class="px-4 py-2 border-b border-gray-200">
-            <p class="text-sm font-medium text-gray-900">{{currentUser.name}}</p>
-            <p class="text-sm text-gray-500">{{currentUser.email}}</p>
+            <p class="text-sm font-medium text-gray-900 truncate">{{currentUser.name}}</p>
+            <p class="text-sm text-gray-500 truncate">{{currentUser.email}}</p>
           </div>
           
           <a routerLink="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150" (click)="isUserMenuOpen = false">
