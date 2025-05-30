@@ -94,4 +94,8 @@ export class AdminDashboardComponent implements OnInit {
                 </svg>`;
     }
   }
+
+  showDevelopmentAlert(feature: string): void {
+    alert(`Función de ${feature} en desarrollo`);
+  }
 }

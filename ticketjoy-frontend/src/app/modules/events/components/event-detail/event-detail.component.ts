@@ -164,6 +164,12 @@ export class EventDetailComponent implements OnInit {
   }
   
   purchaseTickets(): void {
+    // Mostrar alerta de función en desarrollo
+    alert('Función de compra de boletos en desarrollo');
+    return;
+    
+    // Código original comentado para uso futuro
+    /*
     if (!this.event || !this.canPurchaseTickets()) return;
     
     this.isPurchasing = true;
@@ -202,6 +208,7 @@ export class EventDetailComponent implements OnInit {
           }
         }
       });
+    */
   }
   
   publishEvent(): void {
