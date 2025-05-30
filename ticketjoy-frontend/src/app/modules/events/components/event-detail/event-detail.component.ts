@@ -22,7 +22,7 @@ export class EventDetailComponent implements OnInit {
   error = '';
   successMessage = '';
   event: Event | null = null;
-  
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -34,7 +34,7 @@ export class EventDetailComponent implements OnInit {
   ngOnInit(): void {
     this.isAdmin = this.authService.hasRole('admin');
     this.eventId = +this.route.snapshot.paramMap.get('id')!;
-    
+
     if (isNaN(this.eventId) || this.eventId <= 0) {
       this.router.navigate(['/events']);
       return;
@@ -50,14 +50,14 @@ export class EventDetailComponent implements OnInit {
         }, 5000);
       }
     });
-    
+
     this.loadEventDetails();
   }
-  
+
   loadEventDetails(): void {
     this.isLoading = true;
     this.error = '';
-    
+
     this.eventService.getEvent(this.eventId)
       .pipe(
         finalize(() => {
@@ -67,21 +67,21 @@ export class EventDetailComponent implements OnInit {
       .subscribe({
         next: (event) => {
           this.event = event;
-          
+
           // Check if current user is the organizer
           const currentUser = this.authService.currentUser;
           this.isOrganizer = currentUser?.id === event.organizer_id;
-          
+
           // Reset ticket quantity to 1 or max available
           this.ticketQuantity = 1;
-          
+
           if (this.getAvailableTickets() < this.ticketQuantity) {
             this.ticketQuantity = Math.max(1, this.getAvailableTickets());
           }
         },
         error: (error) => {
           console.error('Error loading event details:', error);
-          
+
           // Set appropriate error message
           if (error.status === 404) {
             this.error = 'El evento no existe o no tienes permisos para verlo.';
@@ -95,36 +95,36 @@ export class EventDetailComponent implements OnInit {
         }
       });
   }
-  
+
   // Método seguro para obtener available_tickets
   getAvailableTickets(): number {
     return this.event?.available_tickets ?? this.event?.capacity ?? 0;
   }
-  
+
   // Verifica si el evento está agotado
   isSoldOut(): boolean {
     return this.event?.status === 'published' && this.getAvailableTickets() <= 0;
   }
-  
+
   // Verifica si se pueden comprar boletos
   canPurchaseTickets(): boolean {
-    return this.event?.status === 'published' && 
-           this.getAvailableTickets() > 0 &&
-           !this.isEventExpired();
+    return this.event?.status === 'published' &&
+      this.getAvailableTickets() > 0 &&
+      !this.isEventExpired();
   }
-  
+
   // Verifica si el evento ya expiró
   isEventExpired(): boolean {
     if (!this.event) return false;
     const eventDate = new Date(this.event.start_date);
     return eventDate < new Date();
   }
-  
+
   // Verifica si se alcanzó la cantidad máxima de boletos
   isMaxQuantityReached(): boolean {
     return this.ticketQuantity >= this.getAvailableTickets();
   }
-  
+
   // Obtiene el estado del evento en español
   getEventStatusLabel(status: string): string {
     switch (status) {
@@ -135,39 +135,39 @@ export class EventDetailComponent implements OnInit {
       default: return 'Desconocido';
     }
   }
-  
+
   // Puede editar el evento si es admin o es el organizador
   canEditEvent(): boolean {
     return this.isAdmin || this.isOrganizer;
   }
-  
+
   // Puede publicar el evento si es admin o es el organizador y está en draft
   canPublishEvent(): boolean {
     return (this.isAdmin || this.isOrganizer) && this.event?.status === 'draft';
   }
-  
+
   increaseQuantity(): void {
     if (this.canPurchaseTickets() && !this.isMaxQuantityReached()) {
       this.ticketQuantity++;
     }
   }
-  
+
   decreaseQuantity(): void {
     if (this.ticketQuantity > 1) {
       this.ticketQuantity--;
     }
   }
-  
+
   getSubtotal(): number {
     if (!this.event) return 0;
     return this.event.price * this.ticketQuantity;
   }
-  
+
   purchaseTickets(): void {
     // Mostrar alerta de función en desarrollo
     alert('Función de compra de boletos en desarrollo');
     return;
-    
+
     // Código original comentado para uso futuro
     /*
     if (!this.event || !this.canPurchaseTickets()) return;
@@ -210,10 +210,10 @@ export class EventDetailComponent implements OnInit {
       });
     */
   }
-  
+
   publishEvent(): void {
     if (!this.event || !this.canPublishEvent()) return;
-    
+
     this.eventService.publishEvent(this.event.id)
       .subscribe({
         next: (updatedEvent) => {
@@ -226,22 +226,22 @@ export class EventDetailComponent implements OnInit {
         }
       });
   }
-  
+
   editEvent(): void {
     if (!this.event || !this.canEditEvent()) return;
     this.router.navigate(['/events/edit', this.event.id]);
   }
-  
+
   deleteEvent(): void {
     if (!this.event || !this.canEditEvent()) return;
-    
+
     const confirmDelete = confirm(
       `¿Estás seguro de que quieres eliminar el evento "${this.event.title}"?\n\n` +
       'Esta acción no se puede deshacer y se eliminarán todos los boletos asociados.'
     );
-    
+
     if (!confirmDelete) return;
-    
+
     this.eventService.deleteEvent(this.event.id)
       .subscribe({
         next: () => {
@@ -260,19 +260,19 @@ export class EventDetailComponent implements OnInit {
         }
       });
   }
-  
+
   formatEventDate(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleString('es-CO', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
+    return date.toLocaleString('es-CO', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
   }
-  
+
   // Método para recargar el evento
   refreshEvent(): void {
     this.loadEventDetails();

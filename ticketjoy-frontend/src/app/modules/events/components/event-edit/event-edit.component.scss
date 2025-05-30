@@ -8,7 +8,7 @@
 /* Category button styles */
 .category-button {
   transition: all 0.2s ease-in-out;
-  
+
   &:hover {
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -18,7 +18,7 @@
 /* Image upload area styles */
 .image-upload-area {
   transition: border-color 0.2s ease-in-out;
-  
+
   &:hover {
     border-color: #3f51b5;
   }
@@ -39,7 +39,7 @@
 /* Preview image styles */
 .image-preview {
   transition: transform 0.2s ease-in-out;
-  
+
   &:hover {
     transform: scale(1.02);
   }
@@ -50,15 +50,15 @@
   option[value="draft"] {
     color: #fbbf24;
   }
-  
+
   option[value="published"] {
     color: #10b981;
   }
-  
+
   option[value="cancelled"] {
     color: #ef4444;
   }
-  
+
   option[value="completed"] {
     color: #6b7280;
   }

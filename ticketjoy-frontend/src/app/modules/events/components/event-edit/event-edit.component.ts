@@ -43,7 +43,7 @@ export class EventEditComponent implements OnInit {
   ngOnInit(): void {
     this.isAdmin = this.authService.hasRole('admin');
     this.eventId = +this.route.snapshot.paramMap.get('id')!;
-    
+
     if (isNaN(this.eventId) || this.eventId <= 0) {
       this.router.navigate(['/events']);
       return;
@@ -83,11 +83,11 @@ export class EventEditComponent implements OnInit {
       .subscribe({
         next: (event) => {
           this.event = event;
-          
+
           // Check permissions
           const currentUser = this.authService.currentUser;
           this.isOrganizer = currentUser?.id === event.organizer_id;
-          
+
           if (!this.isAdmin && !this.isOrganizer) {
             this.router.navigate(['/events', this.eventId]);
             return;
@@ -132,7 +132,7 @@ export class EventEditComponent implements OnInit {
     // Format dates for datetime-local input
     const startDate = this.formatDateForInput(event.start_date);
     const endDate = this.formatDateForInput(event.end_date);
-    
+
     // Get category IDs
     const categoryIds = event.categories?.map(cat => cat.id) || [];
 
@@ -164,7 +164,7 @@ export class EventEditComponent implements OnInit {
     const day = String(date.getDate()).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    
+
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 

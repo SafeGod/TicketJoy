@@ -2,7 +2,8 @@
   <!-- Navigation -->
   <div class="mb-6">
     <button (click)="goBack()" class="inline-flex items-center text-primary-600 hover:text-primary-800">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-1">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-5 h-5 mr-1">
         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
       </svg>
       Volver al evento
@@ -16,28 +17,35 @@
 
   <!-- Loading state -->
   <div *ngIf="isLoadingEvent || isLoadingCategories" class="flex justify-center items-center py-12">
-    <svg class="animate-spin -ml-1 mr-3 h-10 w-10 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <svg class="animate-spin -ml-1 mr-3 h-10 w-10 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+      viewBox="0 0 24 24">
       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      <path class="opacity-75" fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+      </path>
     </svg>
     <span class="text-lg">Cargando información del evento...</span>
   </div>
 
   <!-- Error message -->
-  <div *ngIf="error && !isLoadingEvent" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+  <div *ngIf="error && !isLoadingEvent"
+    class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
     <span class="block sm:inline">{{ error }}</span>
     <div class="mt-2" *ngIf="!event">
-      <button (click)="goBack()" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded text-red-700 bg-red-100 hover:bg-red-200">
+      <button (click)="goBack()"
+        class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded text-red-700 bg-red-100 hover:bg-red-200">
         Volver al evento
       </button>
     </div>
   </div>
 
   <!-- Form container -->
-  <div *ngIf="!isLoadingEvent && !isLoadingCategories && event" class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+  <div *ngIf="!isLoadingEvent && !isLoadingCategories && event"
+    class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
     <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="p-6">
       <!-- Error message for form submission -->
-      <div *ngIf="error && !isLoadingEvent" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+      <div *ngIf="error && !isLoadingEvent"
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
         <span class="block sm:inline">{{ error }}</span>
       </div>
 
@@ -45,13 +53,9 @@
         <!-- Title -->
         <div class="col-span-2">
           <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Título del Evento *</label>
-          <input 
-            type="text" 
-            id="title" 
-            formControlName="title" 
+          <input type="text" id="title" formControlName="title"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-            [ngClass]="{ 'border-red-500': submitted && f['title'].errors }"
-          />
+            [ngClass]="{ 'border-red-500': submitted && f['title'].errors }" />
           <div *ngIf="submitted && f['title'].errors" class="text-red-500 text-sm mt-1">
             <div *ngIf="f['title'].errors['required']">El título es requerido</div>
             <div *ngIf="f['title'].errors['minlength']">El título debe tener al menos 5 caracteres</div>
@@ -61,13 +65,9 @@
         <!-- Description -->
         <div class="col-span-2">
           <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Descripción *</label>
-          <textarea 
-            id="description" 
-            formControlName="description" 
-            rows="4" 
+          <textarea id="description" formControlName="description" rows="4"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-            [ngClass]="{ 'border-red-500': submitted && f['description'].errors }"
-          ></textarea>
+            [ngClass]="{ 'border-red-500': submitted && f['description'].errors }"></textarea>
           <div *ngIf="submitted && f['description'].errors" class="text-red-500 text-sm mt-1">
             <div *ngIf="f['description'].errors['required']">La descripción es requerida</div>
             <div *ngIf="f['description'].errors['minlength']">La descripción debe tener al menos 20 caracteres</div>
@@ -77,13 +77,9 @@
         <!-- Start Date -->
         <div>
           <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Inicio *</label>
-          <input 
-            type="datetime-local" 
-            id="start_date" 
-            formControlName="start_date" 
+          <input type="datetime-local" id="start_date" formControlName="start_date"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-            [ngClass]="{ 'border-red-500': submitted && f['start_date'].errors }"
-          />
+            [ngClass]="{ 'border-red-500': submitted && f['start_date'].errors }" />
           <div *ngIf="submitted && f['start_date'].errors" class="text-red-500 text-sm mt-1">
             <div *ngIf="f['start_date'].errors['required']">La fecha de inicio es requerida</div>
           </div>
@@ -92,13 +88,9 @@
         <!-- End Date -->
         <div>
           <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">Fecha de Finalización *</label>
-          <input 
-            type="datetime-local" 
-            id="end_date" 
-            formControlName="end_date" 
+          <input type="datetime-local" id="end_date" formControlName="end_date"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-            [ngClass]="{ 'border-red-500': submitted && f['end_date'].errors }"
-          />
+            [ngClass]="{ 'border-red-500': submitted && f['end_date'].errors }" />
           <div *ngIf="submitted && f['end_date'].errors" class="text-red-500 text-sm mt-1">
             <div *ngIf="f['end_date'].errors['required']">La fecha de finalización es requerida</div>
           </div>
@@ -107,14 +99,9 @@
         <!-- Location -->
         <div>
           <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Lugar *</label>
-          <input 
-            type="text" 
-            id="location" 
-            formControlName="location" 
+          <input type="text" id="location" formControlName="location"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-            [ngClass]="{ 'border-red-500': submitted && f['location'].errors }"
-            placeholder="Ej. Auditorio Principal"
-          />
+            [ngClass]="{ 'border-red-500': submitted && f['location'].errors }" placeholder="Ej. Auditorio Principal" />
           <div *ngIf="submitted && f['location'].errors" class="text-red-500 text-sm mt-1">
             <div *ngIf="f['location'].errors['required']">El lugar es requerido</div>
           </div>
@@ -123,14 +110,10 @@
         <!-- Address -->
         <div>
           <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Dirección *</label>
-          <input 
-            type="text" 
-            id="address" 
-            formControlName="address" 
+          <input type="text" id="address" formControlName="address"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
             [ngClass]="{ 'border-red-500': submitted && f['address'].errors }"
-            placeholder="Ej. Campus Central, Edificio A, Piso 3"
-          />
+            placeholder="Ej. Campus Central, Edificio A, Piso 3" />
           <div *ngIf="submitted && f['address'].errors" class="text-red-500 text-sm mt-1">
             <div *ngIf="f['address'].errors['required']">La dirección es requerida</div>
           </div>
@@ -139,14 +122,9 @@
         <!-- Capacity -->
         <div>
           <label for="capacity" class="block text-sm font-medium text-gray-700 mb-1">Capacidad *</label>
-          <input 
-            type="number" 
-            id="capacity" 
-            formControlName="capacity" 
+          <input type="number" id="capacity" formControlName="capacity"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-            [ngClass]="{ 'border-red-500': submitted && f['capacity'].errors }"
-            min="1"
-          />
+            [ngClass]="{ 'border-red-500': submitted && f['capacity'].errors }" min="1" />
           <div *ngIf="submitted && f['capacity'].errors" class="text-red-500 text-sm mt-1">
             <div *ngIf="f['capacity'].errors['required']">La capacidad es requerida</div>
             <div *ngIf="f['capacity'].errors['min']">La capacidad debe ser al menos 1</div>
@@ -160,14 +138,9 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="text-gray-500 sm:text-sm">$</span>
             </div>
-            <input
-              type="number"
-              id="price"
-              formControlName="price"
+            <input type="number" id="price" formControlName="price"
               class="w-full pl-7 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              [ngClass]="{ 'border-red-500': submitted && f['price'].errors }"
-              min="0"
-            />
+              [ngClass]="{ 'border-red-500': submitted && f['price'].errors }" min="0" />
           </div>
           <div *ngIf="submitted && f['price'].errors" class="text-red-500 text-sm mt-1">
             <div *ngIf="f['price'].errors['required']">El precio es requerido</div>
@@ -179,11 +152,8 @@
         <!-- Status -->
         <div>
           <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Estado del Evento *</label>
-          <select 
-            id="status" 
-            formControlName="status" 
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-          >
+          <select id="status" formControlName="status"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
             <option value="draft">Borrador</option>
             <option value="published">Publicado</option>
             <option value="cancelled">Cancelado</option>
@@ -195,37 +165,30 @@
         <div class="col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-2">Categorías *</label>
           <div class="flex flex-wrap gap-2">
-            <button
-              *ngFor="let category of categories"
-              type="button"
-              (click)="toggleCategory(category.id)"
+            <button *ngFor="let category of categories" type="button" (click)="toggleCategory(category.id)"
               class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
               [class.bg-blue-100]="category.color === 'blue' && isCategorySelected(category.id)"
               [class.text-blue-800]="category.color === 'blue' && isCategorySelected(category.id)"
               [class.bg-blue-50]="category.color === 'blue' && !isCategorySelected(category.id)"
               [class.text-blue-600]="category.color === 'blue' && !isCategorySelected(category.id)"
-              
               [class.bg-purple-100]="category.color === 'purple' && isCategorySelected(category.id)"
               [class.text-purple-800]="category.color === 'purple' && isCategorySelected(category.id)"
               [class.bg-purple-50]="category.color === 'purple' && !isCategorySelected(category.id)"
               [class.text-purple-600]="category.color === 'purple' && !isCategorySelected(category.id)"
-              
               [class.bg-orange-100]="category.color === 'orange' && isCategorySelected(category.id)"
               [class.text-orange-800]="category.color === 'orange' && isCategorySelected(category.id)"
               [class.bg-orange-50]="category.color === 'orange' && !isCategorySelected(category.id)"
               [class.text-orange-600]="category.color === 'orange' && !isCategorySelected(category.id)"
-              
               [class.bg-green-100]="category.color === 'green' && isCategorySelected(category.id)"
               [class.text-green-800]="category.color === 'green' && isCategorySelected(category.id)"
               [class.bg-green-50]="category.color === 'green' && !isCategorySelected(category.id)"
               [class.text-green-600]="category.color === 'green' && !isCategorySelected(category.id)"
-              
               [class.bg-red-100]="category.color === 'red' && isCategorySelected(category.id)"
               [class.text-red-800]="category.color === 'red' && isCategorySelected(category.id)"
               [class.bg-red-50]="category.color === 'red' && !isCategorySelected(category.id)"
-              [class.text-red-600]="category.color === 'red' && !isCategorySelected(category.id)"
-            >
-              <svg *ngIf="isCategorySelected(category.id)" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
+              [class.text-red-600]="category.color === 'red' && !isCategorySelected(category.id)">
+              <svg *ngIf="isCategorySelected(category.id)" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
               </svg>
               {{ category.name }}
@@ -239,33 +202,38 @@
         <!-- Image Upload -->
         <div class="col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-2">Imagen del Evento</label>
-          
+
           <!-- Current image preview -->
           <div *ngIf="imagePreview" class="mb-4">
             <div class="relative w-full h-40 bg-gray-100 rounded-md overflow-hidden">
               <img [src]="imagePreview" alt="Preview" class="w-full h-full object-cover">
-              <button 
-                type="button" 
+              <button type="button"
                 class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                (click)="removeImage()"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                (click)="removeImage()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-5 h-5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
           </div>
-          
+
           <!-- Upload input -->
-          <div *ngIf="!imagePreview" class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+          <div *ngIf="!imagePreview"
+            class="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
             <div class="space-y-1 text-center">
-              <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48"
+                aria-hidden="true">
+                <path
+                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
               <div class="flex text-sm text-gray-600">
-                <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
+                <label for="file-upload"
+                  class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
                   <span>Subir una imagen</span>
-                  <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileChange($event)" accept="image/*">
+                  <input id="file-upload" name="file-upload" type="file" class="sr-only" (change)="onFileChange($event)"
+                    accept="image/*">
                 </label>
                 <p class="pl-1">o arrastra y suelta</p>
               </div>
@@ -274,23 +242,24 @@
               </p>
             </div>
           </div>
-          
+
           <!-- Upload button for selected file -->
           <div *ngIf="selectedFile && !f['image'].value && !isUploadingImage" class="mt-3">
-            <button 
-              type="button"
+            <button type="button"
               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-              (click)="uploadImage()"
-            >
+              (click)="uploadImage()">
               Subir Nueva Imagen
             </button>
           </div>
-          
+
           <!-- Uploading indicator -->
           <div *ngIf="isUploadingImage" class="mt-3 flex items-center text-sm text-gray-500">
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
             </svg>
             Subiendo imagen...
           </div>
@@ -299,21 +268,19 @@
 
       <!-- Form actions -->
       <div class="mt-6 pt-5 border-t border-gray-200 flex items-center justify-end space-x-3">
-        <button
-          type="button"
-          (click)="goBack()"
-          class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-        >
+        <button type="button" (click)="goBack()"
+          class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
           Cancelar
         </button>
-        <button
-          type="submit"
+        <button type="submit"
           class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-          [disabled]="isSubmitting"
-        >
-          <svg *ngIf="isSubmitting" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          [disabled]="isSubmitting">
+          <svg *ngIf="isSubmitting" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
           </svg>
           {{ isSubmitting ? 'Actualizando...' : 'Actualizar Evento' }}
         </button>

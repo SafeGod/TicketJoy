@@ -49,7 +49,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Payment::class);
     }
-    
+
     public function hasRole($roleName)
     {
         try {
@@ -59,7 +59,7 @@ class User extends Authenticatable
             return false;
         }
     }
-    
+
     public function hasPermission($permissionName)
     {
         try {
@@ -73,20 +73,20 @@ class User extends Authenticatable
             return false;
         }
     }
-    
+
     public function assignRole($role)
     {
         try {
             if (is_string($role)) {
                 $role = Role::where('name', $role)->firstOrFail();
             }
-            
+
             $this->roles()->syncWithoutDetaching([$role->id]);
         } catch (\Exception $e) {
             Log::error('Could not assign role to user ' . $this->id . ': ' . $e->getMessage());
         }
     }
-    
+
     public function getRoleNames()
     {
         try {
@@ -96,16 +96,16 @@ class User extends Authenticatable
             return collect();
         }
     }
-    
+
     public function getAllPermissions()
     {
         try {
             $permissions = collect();
-            
+
             foreach ($this->roles as $role) {
                 $permissions = $permissions->merge($role->permissions);
             }
-            
+
             return $permissions->unique('id');
         } catch (\Exception $e) {
             Log::warning('Could not get permissions for user ' . $this->id . ': ' . $e->getMessage());

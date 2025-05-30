@@ -22,7 +22,7 @@ export class EventCreateComponent implements OnInit {
   isUploadingImage = false;
   imagePreview: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
-  
+
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
@@ -35,7 +35,7 @@ export class EventCreateComponent implements OnInit {
     this.initForm();
     this.loadCategories();
   }
-  
+
   initForm(): void {
     this.eventForm = this.formBuilder.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
@@ -50,7 +50,7 @@ export class EventCreateComponent implements OnInit {
       image: ['']
     });
   }
-  
+
   loadCategories(): void {
     this.isLoadingCategories = true;
     this.categoryService.getCategories()
@@ -69,14 +69,14 @@ export class EventCreateComponent implements OnInit {
         }
       });
   }
-  
+
   // Convenience getter for easy access to form fields
   get f() { return this.eventForm.controls; }
-  
+
   toggleCategory(categoryId: number): void {
     const currentCategories = this.f['categories'].value as number[];
     const index = currentCategories.indexOf(categoryId);
-    
+
     if (index > -1) {
       // Category already selected, remove it
       currentCategories.splice(index, 1);
@@ -84,20 +84,20 @@ export class EventCreateComponent implements OnInit {
       // Category not selected, add it
       currentCategories.push(categoryId);
     }
-    
+
     this.f['categories'].setValue(currentCategories);
   }
-  
+
   isCategorySelected(categoryId: number): boolean {
     const currentCategories = this.f['categories'].value as number[];
     return currentCategories.includes(categoryId);
   }
-  
+
   onFileChange(event: any): void {
     const files = event.target.files as FileList;
     if (files.length > 0) {
       this.selectedFile = files[0];
-      
+
       // Create preview
       const reader = new FileReader();
       reader.onload = () => {
@@ -106,12 +106,12 @@ export class EventCreateComponent implements OnInit {
       reader.readAsDataURL(this.selectedFile);
     }
   }
-  
+
   uploadImage(): void {
     if (!this.selectedFile) {
       return;
     }
-    
+
     this.isUploadingImage = true;
     this.imageService.uploadImage(this.selectedFile)
       .pipe(
@@ -130,30 +130,30 @@ export class EventCreateComponent implements OnInit {
         }
       });
   }
-  
+
   onSubmit(): void {
     this.submitted = true;
-    
+
     // Stop here if form is invalid
     if (this.eventForm.invalid) {
       return;
     }
-    
+
     // If there's a selected file but it hasn't been uploaded yet, upload it first
     if (this.selectedFile && !this.f['image'].value) {
       this.uploadImage();
       return;
     }
-    
+
     this.isSubmitting = true;
     this.error = '';
-    
+
     // Preparar los datos del formulario
     const eventData = {
       ...this.eventForm.value,
       status: 'published'
     };
-    
+
     // Llamar al servicio para crear el evento
     this.eventService.createEvent(eventData)
       .pipe(

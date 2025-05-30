@@ -1,361 +1,389 @@
 <div class="container mx-auto">
-    <!-- Navigation and admin actions -->
-    <div class="flex justify-between items-center mb-6">
-      <div>
-        <a routerLink="/events" class="inline-flex items-center text-primary-600 hover:text-primary-800">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-1">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-          </svg>
-          Volver a eventos
-        </a>
-      </div>
-      
-      <div *ngIf="canEditEvent() && event" class="flex space-x-3">
-        <button 
-          *ngIf="canPublishEvent()" 
-          (click)="publishEvent()" 
-          class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12.99 8.997c.267-.268.534-.268.534-.268s.268.268.268.534c0 .267-.268.534-.534.534s-.534-.267-.534-.534c0-.266.267-.534.534-.534zM10.7 17.43l-.91.91a1.5 1.5 0 01-2.12 0l-.91-.91a1.5 1.5 0 010-2.12l.91-.91a1.5 1.5 0 012.12 0l.91.91a1.5 1.5 0 010 2.12zM13.02 14.97l-.91.91a1.5 1.5 0 01-2.12 0l-.91-.91a1.5 1.5 0 010-2.12l.91-.91a1.5 1.5 0 012.12 0l.91.91a1.5 1.5 0 010 2.12zM15.34 12.54l-.91.91a1.5 1.5 0 01-2.12 0l-.91-.91a1.5 1.5 0 010-2.12l.91-.91a1.5 1.5 0 012.12 0l.91.91a1.5 1.5 0 010 2.12z" />
-          </svg>
-          Publicar Evento
-        </button>
-        
-        <button (click)="editEvent()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-          </svg>
-          Editar Evento
-        </button>
-        
-        <button (click)="deleteEvent()" class="inline-flex items-center px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-          </svg>
-          Eliminar Evento
-        </button>
-      </div>
-    </div>
-
-    <!-- Success message -->
-    <div *ngIf="successMessage && !isLoading" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6" role="alert">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>{{ successMessage }}</span>
-        </div>
-        <button 
-          (click)="clearSuccessMessage()" 
-          class="text-green-700 hover:text-green-900"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Error message -->
-    <div *ngIf="error && !isLoading" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
-      <div class="flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+  <!-- Navigation and admin actions -->
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <a routerLink="/events" class="inline-flex items-center text-primary-600 hover:text-primary-800">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5 mr-1">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
         </svg>
-        <span>{{ error }}</span>
-      </div>
-      <div class="mt-2">
-        <button 
-          (click)="refreshEvent()" 
-          class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded text-red-700 bg-red-100 hover:bg-red-200"
-        >
-          Reintentar
-        </button>
-      </div>
-    </div>
-  
-    <!-- Loading state -->
-    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
-      <svg class="animate-spin -ml-1 mr-3 h-10 w-10 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      <span class="text-lg">Cargando detalles del evento...</span>
-    </div>
-  
-    <!-- Event not found message -->
-    <div *ngIf="!isLoading && !event && !error" class="bg-white p-8 rounded-lg shadow text-center">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-gray-400 mb-4">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-      </svg>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">Evento no encontrado</h3>
-      <p class="text-gray-500 mb-4">El evento que buscas no existe o ha sido eliminado.</p>
-      <a routerLink="/events" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
-        Ver todos los eventos
+        Volver a eventos
       </a>
     </div>
-  
-    <!-- Event details -->
-    <div *ngIf="!isLoading && event && !error" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Main event info -->
-      <div class="lg:col-span-2">
-        <!-- Event image -->
-        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-          <div class="h-64 bg-gray-300">
-            <img *ngIf="event.image" [src]="event.image" alt="{{ event.title }}" class="w-full h-full object-cover">
-            <div *ngIf="!event.image" class="w-full h-full flex items-center justify-center bg-gray-200">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-gray-400">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-              </svg>
-            </div>
+
+    <div *ngIf="canEditEvent() && event" class="flex space-x-3">
+      <button *ngIf="canPublishEvent()" (click)="publishEvent()"
+        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5 mr-2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12.99 8.997c.267-.268.534-.268.534-.268s.268.268.268.534c0 .267-.268.534-.534.534s-.534-.267-.534-.534c0-.266.267-.534.534-.534zM10.7 17.43l-.91.91a1.5 1.5 0 01-2.12 0l-.91-.91a1.5 1.5 0 010-2.12l.91-.91a1.5 1.5 0 012.12 0l.91.91a1.5 1.5 0 010 2.12zM13.02 14.97l-.91.91a1.5 1.5 0 01-2.12 0l-.91-.91a1.5 1.5 0 010-2.12l.91-.91a1.5 1.5 0 012.12 0l.91.91a1.5 1.5 0 010 2.12zM15.34 12.54l-.91.91a1.5 1.5 0 01-2.12 0l-.91-.91a1.5 1.5 0 010-2.12l.91-.91a1.5 1.5 0 012.12 0l.91.91a1.5 1.5 0 010 2.12z" />
+        </svg>
+        Publicar Evento
+      </button>
+
+      <button (click)="editEvent()"
+        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5 mr-2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+        </svg>
+        Editar Evento
+      </button>
+
+      <button (click)="deleteEvent()"
+        class="inline-flex items-center px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5 mr-2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+        </svg>
+        Eliminar Evento
+      </button>
+    </div>
+  </div>
+
+  <!-- Success message -->
+  <div *ngIf="successMessage && !isLoading"
+    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6" role="alert">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5 mr-2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ successMessage }}</span>
+      </div>
+      <button (click)="clearSuccessMessage()" class="text-green-700 hover:text-green-900">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error && !isLoading" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6"
+    role="alert">
+    <div class="flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-5 h-5 mr-2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+      </svg>
+      <span>{{ error }}</span>
+    </div>
+    <div class="mt-2">
+      <button (click)="refreshEvent()"
+        class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded text-red-700 bg-red-100 hover:bg-red-200">
+        Reintentar
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+    <svg class="animate-spin -ml-1 mr-3 h-10 w-10 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+      viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+      </path>
+    </svg>
+    <span class="text-lg">Cargando detalles del evento...</span>
+  </div>
+
+  <!-- Event not found message -->
+  <div *ngIf="!isLoading && !event && !error" class="bg-white p-8 rounded-lg shadow text-center">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+      class="w-16 h-16 mx-auto text-gray-400 mb-4">
+      <path stroke-linecap="round" stroke-linejoin="round"
+        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+    </svg>
+    <h3 class="text-lg font-medium text-gray-900 mb-2">Evento no encontrado</h3>
+    <p class="text-gray-500 mb-4">El evento que buscas no existe o ha sido eliminado.</p>
+    <a routerLink="/events"
+      class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
+      Ver todos los eventos
+    </a>
+  </div>
+
+  <!-- Event details -->
+  <div *ngIf="!isLoading && event && !error" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Main event info -->
+    <div class="lg:col-span-2">
+      <!-- Event image -->
+      <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+        <div class="h-64 bg-gray-300">
+          <img *ngIf="event.image" [src]="event.image" alt="{{ event.title }}" class="w-full h-full object-cover">
+          <div *ngIf="!event.image" class="w-full h-full flex items-center justify-center bg-gray-200">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-16 h-16 text-gray-400">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+            </svg>
           </div>
-          
-          <div class="p-6">
-            <!-- Event title and categories -->
-            <div class="mb-4">
-              <div class="flex flex-wrap gap-2 mb-2" *ngIf="event.categories && event.categories.length > 0">
-                <span *ngFor="let category of event.categories" 
-                      class="px-2 py-1 text-xs font-medium rounded-full" 
-                      [ngClass]="'bg-' + (category.color || 'blue') + '-100 text-' + (category.color || 'blue') + '-800'">
-                  {{ category.name }}
-                </span>
-              </div>
-              
-              <!-- Event status badge -->
-              <div *ngIf="event.status !== 'published'" class="mb-2">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                      [ngClass]="{
+        </div>
+
+        <div class="p-6">
+          <!-- Event title and categories -->
+          <div class="mb-4">
+            <div class="flex flex-wrap gap-2 mb-2" *ngIf="event.categories && event.categories.length > 0">
+              <span *ngFor="let category of event.categories" class="px-2 py-1 text-xs font-medium rounded-full"
+                [ngClass]="'bg-' + (category.color || 'blue') + '-100 text-' + (category.color || 'blue') + '-800'">
+                {{ category.name }}
+              </span>
+            </div>
+
+            <!-- Event status badge -->
+            <div *ngIf="event.status !== 'published'" class="mb-2">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" [ngClass]="{
                         'bg-yellow-100 text-yellow-800': event.status === 'draft',
                         'bg-red-100 text-red-800': event.status === 'cancelled',
                         'bg-gray-100 text-gray-800': event.status === 'completed'
                       }">
-                  {{ getEventStatusLabel(event.status) }}
-                </span>
-              </div>
-              
-              <h1 class="text-2xl font-bold">{{ event.title }}</h1>
+                {{ getEventStatusLabel(event.status) }}
+              </span>
             </div>
-            
-            <!-- Event organizer info -->
-            <div class="mb-6 pb-6 border-b border-gray-200">
-              <p class="text-gray-600 mb-1">Organizado por: <span class="font-medium">{{ event.organizer?.name || 'Organizador' }}</span></p>
-              <p class="text-gray-600">Contacto: <a [href]="'mailto:' + (event.organizer?.email || '')" class="text-primary-600 hover:text-primary-800">{{ event.organizer?.email || 'N/A' }}</a></p>
-            </div>
-            
-            <!-- Event description -->
-            <div class="mb-6 pb-6 border-b border-gray-200">
-              <h2 class="text-xl font-semibold mb-3">Descripción</h2>
-              <div class="text-gray-700 prose max-w-none whitespace-pre-line">{{ event.description }}</div>
-            </div>
-            
-            <!-- Event status notices -->
-            <div *ngIf="event.status !== 'published'" class="mb-6 py-3 px-4 border-l-4 text-sm"
-                 [ngClass]="{
+
+            <h1 class="text-2xl font-bold">{{ event.title }}</h1>
+          </div>
+
+          <!-- Event organizer info -->
+          <div class="mb-6 pb-6 border-b border-gray-200">
+            <p class="text-gray-600 mb-1">Organizado por: <span class="font-medium">{{ event.organizer?.name ||
+                'Organizador' }}</span></p>
+            <p class="text-gray-600">Contacto: <a [href]="'mailto:' + (event.organizer?.email || '')"
+                class="text-primary-600 hover:text-primary-800">{{ event.organizer?.email || 'N/A' }}</a></p>
+          </div>
+
+          <!-- Event description -->
+          <div class="mb-6 pb-6 border-b border-gray-200">
+            <h2 class="text-xl font-semibold mb-3">Descripción</h2>
+            <div class="text-gray-700 prose max-w-none whitespace-pre-line">{{ event.description }}</div>
+          </div>
+
+          <!-- Event status notices -->
+          <div *ngIf="event.status !== 'published'" class="mb-6 py-3 px-4 border-l-4 text-sm" [ngClass]="{
                    'bg-yellow-50 border-yellow-400 text-yellow-700': event.status === 'draft',
                    'bg-red-50 border-red-400 text-red-700': event.status === 'cancelled',
                    'bg-gray-50 border-gray-400 text-gray-700': event.status === 'completed'
                  }">
-              <div class="flex">
-                <div class="flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                  </svg>
-                </div>
-                <div class="ml-3">
-                  <p>
-                    <ng-container [ngSwitch]="event.status">
-                      <ng-container *ngSwitchCase="'draft'">Este evento está en estado de borrador y no está publicado públicamente.</ng-container>
-                      <ng-container *ngSwitchCase="'cancelled'">Este evento ha sido cancelado.</ng-container>
-                      <ng-container *ngSwitchCase="'completed'">Este evento ya ha finalizado.</ng-container>
-                    </ng-container>
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Event expired notice -->
-            <div *ngIf="isEventExpired() && event.status === 'published'" class="mb-6 py-3 px-4 bg-gray-50 border-l-4 border-gray-400 text-gray-700">
-              <div class="flex">
-                <div class="flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div class="ml-3">
-                  <p class="text-sm">Este evento ya ha comenzado o ha finalizado.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Event sidebar info and ticket purchase -->
-      <div class="lg:col-span-1">
-        <!-- Event details card -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 class="text-xl font-semibold mb-4">Detalles del Evento</h2>
-          
-          <div class="space-y-4">
-            <!-- Date and time -->
-            <div class="flex items-start">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mt-0.5 mr-3 text-gray-500">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-              </svg>
-              <div>
-                <p class="font-medium">Fecha y Hora</p>
-                <p class="text-gray-600">{{ formatEventDate(event.start_date) }}</p>
-                <p class="text-gray-600">Hasta: {{ formatEventDate(event.end_date) }}</p>
-              </div>
-            </div>
-            
-            <!-- Location -->
-            <div class="flex items-start">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mt-0.5 mr-3 text-gray-500">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-              </svg>
-              <div>
-                <p class="font-medium">Ubicación</p>
-                <p class="text-gray-600">{{ event.location }}</p>
-                <p class="text-gray-600" *ngIf="event.address">{{ event.address }}</p>
-              </div>
-            </div>
-            
-            <!-- Price -->
-            <div class="flex items-start">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mt-0.5 mr-3 text-gray-500">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 01-.75.75h-.75m-6-1.5H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
-              </svg>
-              <div>
-                <p class="font-medium">Precio</p>
-                <p *ngIf="event.price > 0" class="text-gray-600">{{ event.price | currency:'COP':'symbol-narrow':'1.0-0' }}</p>
-                <p *ngIf="event.price === 0" class="text-gray-600">Entrada Libre</p>
-              </div>
-            </div>
-            
-            <!-- Availability -->
-            <div class="flex items-start">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mt-0.5 mr-3 text-gray-500">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-              </svg>
-              <div>
-                <p class="font-medium">Disponibilidad</p>
-                <p class="text-gray-600">{{ getAvailableTickets() }} de {{ event.capacity }} lugares disponibles</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Purchase error message -->
-        <div *ngIf="purchaseError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
-          <span class="block sm:inline">{{ purchaseError }}</span>
-        </div>
-        
-        <!-- Ticket purchase card -->
-        <div class="bg-white rounded-lg shadow-md p-6" *ngIf="canPurchaseTickets()">
-          <h2 class="text-xl font-semibold mb-4">Reservar Boletos</h2>
-          
-          <!-- Quantity selector -->
-          <div class="mb-4">
-            <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Cantidad</label>
-            <div class="flex items-center">
-              <button 
-                (click)="decreaseQuantity()" 
-                class="flex-none rounded-l-md border border-gray-300 px-3 py-2 text-gray-500 hover:bg-gray-100"
-                [disabled]="ticketQuantity <= 1"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                 </svg>
-              </button>
-              <input 
-                type="number" 
-                id="quantity" 
-                min="1" 
-                [max]="getAvailableTickets()"
-                [(ngModel)]="ticketQuantity" 
-                class="w-16 border-y border-gray-300 py-2 text-center text-gray-900"
-                [disabled]="true"
-              >
-              <button 
-                (click)="increaseQuantity()" 
-                class="flex-none rounded-r-md border border-gray-300 px-3 py-2 text-gray-500 hover:bg-gray-100"
-                [disabled]="isMaxQuantityReached()"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </div>
+              <div class="ml-3">
+                <p>
+                  <ng-container [ngSwitch]="event.status">
+                    <ng-container *ngSwitchCase="'draft'">Este evento está en estado de borrador y no está publicado
+                      públicamente.</ng-container>
+                    <ng-container *ngSwitchCase="'cancelled'">Este evento ha sido cancelado.</ng-container>
+                    <ng-container *ngSwitchCase="'completed'">Este evento ya ha finalizado.</ng-container>
+                  </ng-container>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Event expired notice -->
+          <div *ngIf="isEventExpired() && event.status === 'published'"
+            class="mb-6 py-3 px-4 bg-gray-50 border-l-4 border-gray-400 text-gray-700">
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-              </button>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm">Este evento ya ha comenzado o ha finalizado.</p>
+              </div>
             </div>
-          </div>
-          
-          <!-- Price summary -->
-          <div *ngIf="event.price > 0" class="bg-gray-50 rounded-md p-4 mb-4">
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-gray-600">Precio x {{ ticketQuantity }}</span>
-              <span>{{ event.price | currency:'COP':'symbol-narrow':'1.0-0' }} x {{ ticketQuantity }}</span>
-            </div>
-            <div class="flex justify-between items-center font-medium">
-              <span>Total</span>
-              <span>{{ getSubtotal() | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
-            </div>
-          </div>
-          
-          <!-- Action button -->
-          <button 
-            (click)="purchaseTickets()" 
-            class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 flex justify-center items-center"
-            [disabled]="isPurchasing"
-          >
-            <svg *ngIf="isPurchasing" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            {{ isPurchasing ? 'Procesando...' : (event.price > 0 ? 'Comprar Boletos' : 'Reservar Lugar') }}
-          </button>
-        </div>
-        
-        <!-- Status messages for non-purchasable events -->
-        <div class="bg-white rounded-lg shadow-md p-6" *ngIf="!canPurchaseTickets()">
-          <div class="text-center py-4">
-            <ng-container *ngIf="isSoldOut()">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto text-red-500 mb-3">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-              </svg>
-              <h3 class="text-lg font-semibold mb-1">Agotado</h3>
-              <p class="text-gray-600 mb-4">Todos los boletos para este evento han sido vendidos.</p>
-            </ng-container>
-            
-            <ng-container *ngIf="isEventExpired() && event.status === 'published'">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto text-gray-500 mb-3">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <h3 class="text-lg font-semibold mb-1">Evento Expirado</h3>
-              <p class="text-gray-600 mb-4">Este evento ya ha comenzado o ha finalizado.</p>
-            </ng-container>
-            
-            <ng-container *ngIf="event.status !== 'published'">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto text-yellow-500 mb-3">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-              </svg>
-              <h3 class="text-lg font-semibold mb-1">No Disponible</h3>
-              <p class="text-gray-600 mb-4">
-                <ng-container [ngSwitch]="event.status">
-                  <ng-container *ngSwitchCase="'draft'">Este evento aún no está publicado.</ng-container>
-                  <ng-container *ngSwitchCase="'cancelled'">Este evento ha sido cancelado.</ng-container>
-                  <ng-container *ngSwitchCase="'completed'">Este evento ya ha finalizado.</ng-container>
-                </ng-container>
-              </p>
-            </ng-container>
-            
-            <a routerLink="/events" class="text-primary-600 hover:text-primary-800">
-              Ver eventos disponibles
-            </a>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Event sidebar info and ticket purchase -->
+    <div class="lg:col-span-1">
+      <!-- Event details card -->
+      <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Detalles del Evento</h2>
+
+        <div class="space-y-4">
+          <!-- Date and time -->
+          <div class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-5 h-5 mt-0.5 mr-3 text-gray-500">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+            <div>
+              <p class="font-medium">Fecha y Hora</p>
+              <p class="text-gray-600">{{ formatEventDate(event.start_date) }}</p>
+              <p class="text-gray-600">Hasta: {{ formatEventDate(event.end_date) }}</p>
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-5 h-5 mt-0.5 mr-3 text-gray-500">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+            </svg>
+            <div>
+              <p class="font-medium">Ubicación</p>
+              <p class="text-gray-600">{{ event.location }}</p>
+              <p class="text-gray-600" *ngIf="event.address">{{ event.address }}</p>
+            </div>
+          </div>
+
+          <!-- Price -->
+          <div class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-5 h-5 mt-0.5 mr-3 text-gray-500">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 01-.75.75h-.75m-6-1.5H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+            </svg>
+            <div>
+              <p class="font-medium">Precio</p>
+              <p *ngIf="event.price > 0" class="text-gray-600">{{ event.price | currency:'COP':'symbol-narrow':'1.0-0'
+                }}</p>
+              <p *ngIf="event.price === 0" class="text-gray-600">Entrada Libre</p>
+            </div>
+          </div>
+
+          <!-- Availability -->
+          <div class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-5 h-5 mt-0.5 mr-3 text-gray-500">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+            </svg>
+            <div>
+              <p class="font-medium">Disponibilidad</p>
+              <p class="text-gray-600">{{ getAvailableTickets() }} de {{ event.capacity }} lugares disponibles</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Purchase error message -->
+      <div *ngIf="purchaseError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6"
+        role="alert">
+        <span class="block sm:inline">{{ purchaseError }}</span>
+      </div>
+
+      <!-- Ticket purchase card -->
+      <div class="bg-white rounded-lg shadow-md p-6" *ngIf="canPurchaseTickets()">
+        <h2 class="text-xl font-semibold mb-4">Reservar Boletos</h2>
+
+        <!-- Quantity selector -->
+        <div class="mb-4">
+          <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Cantidad</label>
+          <div class="flex items-center">
+            <button (click)="decreaseQuantity()"
+              class="flex-none rounded-l-md border border-gray-300 px-3 py-2 text-gray-500 hover:bg-gray-100"
+              [disabled]="ticketQuantity <= 1">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" />
+              </svg>
+            </button>
+            <input type="number" id="quantity" min="1" [max]="getAvailableTickets()" [(ngModel)]="ticketQuantity"
+              class="w-16 border-y border-gray-300 py-2 text-center text-gray-900" [disabled]="true">
+            <button (click)="increaseQuantity()"
+              class="flex-none rounded-r-md border border-gray-300 px-3 py-2 text-gray-500 hover:bg-gray-100"
+              [disabled]="isMaxQuantityReached()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Price summary -->
+        <div *ngIf="event.price > 0" class="bg-gray-50 rounded-md p-4 mb-4">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-gray-600">Precio x {{ ticketQuantity }}</span>
+            <span>{{ event.price | currency:'COP':'symbol-narrow':'1.0-0' }} x {{ ticketQuantity }}</span>
+          </div>
+          <div class="flex justify-between items-center font-medium">
+            <span>Total</span>
+            <span>{{ getSubtotal() | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+          </div>
+        </div>
+
+        <!-- Action button -->
+        <button (click)="purchaseTickets()"
+          class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 flex justify-center items-center"
+          [disabled]="isPurchasing">
+          <svg *ngIf="isPurchasing" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          {{ isPurchasing ? 'Procesando...' : (event.price > 0 ? 'Comprar Boletos' : 'Reservar Lugar') }}
+        </button>
+      </div>
+
+      <!-- Status messages for non-purchasable events -->
+      <div class="bg-white rounded-lg shadow-md p-6" *ngIf="!canPurchaseTickets()">
+        <div class="text-center py-4">
+          <ng-container *ngIf="isSoldOut()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-12 h-12 mx-auto text-red-500 mb-3">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+            <h3 class="text-lg font-semibold mb-1">Agotado</h3>
+            <p class="text-gray-600 mb-4">Todos los boletos para este evento han sido vendidos.</p>
+          </ng-container>
+
+          <ng-container *ngIf="isEventExpired() && event.status === 'published'">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-12 h-12 mx-auto text-gray-500 mb-3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="text-lg font-semibold mb-1">Evento Expirado</h3>
+            <p class="text-gray-600 mb-4">Este evento ya ha comenzado o ha finalizado.</p>
+          </ng-container>
+
+          <ng-container *ngIf="event.status !== 'published'">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-12 h-12 mx-auto text-yellow-500 mb-3">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+            <h3 class="text-lg font-semibold mb-1">No Disponible</h3>
+            <p class="text-gray-600 mb-4">
+              <ng-container [ngSwitch]="event.status">
+                <ng-container *ngSwitchCase="'draft'">Este evento aún no está publicado.</ng-container>
+                <ng-container *ngSwitchCase="'cancelled'">Este evento ha sido cancelado.</ng-container>
+                <ng-container *ngSwitchCase="'completed'">Este evento ya ha finalizado.</ng-container>
+              </ng-container>
+            </p>
+          </ng-container>
+
+          <a routerLink="/events" class="text-primary-600 hover:text-primary-800">
+            Ver eventos disponibles
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
+</div>

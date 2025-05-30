@@ -1,217 +1,216 @@
 <div class="container mx-auto">
-    <div class="flex justify-between items-center mb-6">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900">Eventos</h1>
-        <p class="text-gray-600">Explora los eventos disponibles en el campus</p>
-      </div>
-      
-      <div *ngIf="isAdmin">
-        <a routerLink="/events/create" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-          Crear Evento
-        </a>
-      </div>
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Eventos</h1>
+      <p class="text-gray-600">Explora los eventos disponibles en el campus</p>
     </div>
 
-    <!-- Success message -->
-<div *ngIf="successMessage && !isLoading" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6" role="alert">
-  <div class="flex items-center justify-between">
-    <div class="flex items-center">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <span>{{ successMessage }}</span>
-    </div>
-    <button 
-      (click)="clearSuccessMessage()" 
-      class="text-green-700 hover:text-green-900"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
-  </div>
-</div>
-
-    <!-- Error message -->
-    <div *ngIf="error && !isLoading" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
-      <div class="flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+    <div *ngIf="isAdmin">
+      <a routerLink="/events/create"
+        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5 mr-2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
-        <span>{{ error }}</span>
-      </div>
-      <div class="mt-2">
-        <button 
-          (click)="refreshEvents()" 
-          class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded text-red-700 bg-red-100 hover:bg-red-200"
-        >
-          Reintentar
-        </button>
-      </div>
+        Crear Evento
+      </a>
     </div>
-  
-    <!-- Loading state -->
-    <div *ngIf="isLoading" class="flex justify-center items-center py-12">
-      <svg class="animate-spin -ml-1 mr-3 h-10 w-10 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+  </div>
+
+  <!-- Success message -->
+  <div *ngIf="successMessage && !isLoading"
+    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6" role="alert">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5 mr-2">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>{{ successMessage }}</span>
+      </div>
+      <button (click)="clearSuccessMessage()" class="text-green-700 hover:text-green-900">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error && !isLoading" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6"
+    role="alert">
+    <div class="flex items-center">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-5 h-5 mr-2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
       </svg>
-      <span class="text-lg">Cargando eventos...</span>
+      <span>{{ error }}</span>
     </div>
-  
-    <!-- Events listing -->
-    <div *ngIf="!isLoading && !error" class="flex flex-col md:flex-row gap-6">
-      <!-- Filters sidebar -->
-      <div class="w-full md:w-64 bg-white p-4 rounded-lg shadow mb-6">
-        <h2 class="font-semibold text-lg mb-3">Filtros</h2>
-        
-        <!-- Search box -->
-        <div class="mb-4">
-          <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
-          <div class="relative rounded-md shadow-sm">
-            <input
-              type="text"
-              id="search"
-              class="focus:ring-primary-500 focus:border-primary-500 block w-full pl-3 pr-10 py-2 border-gray-300 rounded-md"
-              placeholder="Buscar eventos..."
-              [value]="searchTerm"
-              (input)="onSearch($event)"
-            >
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-              </svg>
-            </div>
+    <div class="mt-2">
+      <button (click)="refreshEvents()"
+        class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded text-red-700 bg-red-100 hover:bg-red-200">
+        Reintentar
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+    <svg class="animate-spin -ml-1 mr-3 h-10 w-10 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+      viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+      </path>
+    </svg>
+    <span class="text-lg">Cargando eventos...</span>
+  </div>
+
+  <!-- Events listing -->
+  <div *ngIf="!isLoading && !error" class="flex flex-col md:flex-row gap-6">
+    <!-- Filters sidebar -->
+    <div class="w-full md:w-64 bg-white p-4 rounded-lg shadow mb-6">
+      <h2 class="font-semibold text-lg mb-3">Filtros</h2>
+
+      <!-- Search box -->
+      <div class="mb-4">
+        <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
+        <div class="relative rounded-md shadow-sm">
+          <input type="text" id="search"
+            class="focus:ring-primary-500 focus:border-primary-500 block w-full pl-3 pr-10 py-2 border-gray-300 rounded-md"
+            placeholder="Buscar eventos..." [value]="searchTerm" (input)="onSearch($event)">
+          <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-5 h-5 text-gray-400">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
           </div>
         </div>
-        
-        <!-- Categories filter -->
-        <div class="mb-4" *ngIf="categories.length > 0">
-          <h3 class="font-medium text-sm text-gray-700 mb-2">Categorías</h3>
-          <div class="space-y-2">
-            <div *ngFor="let category of categories" class="flex items-center">
-              <input 
-                type="checkbox"
-                [id]="'category-' + category.id"
-                class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                [checked]="selectedCategories.includes(category.id)"
-                (change)="toggleCategory(category.id)"
-              >
-              <label [for]="'category-' + category.id" class="ml-2 block text-sm text-gray-700">
-                {{ category.name }}
-              </label>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Reset filters button -->
-        <button 
-          class="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50"
-          (click)="resetFilters()"
-          *ngIf="selectedCategories.length > 0 || searchTerm"
-        >
-          Limpiar filtros
-        </button>
       </div>
-      
+
+      <!-- Categories filter -->
+      <div class="mb-4" *ngIf="categories.length > 0">
+        <h3 class="font-medium text-sm text-gray-700 mb-2">Categorías</h3>
+        <div class="space-y-2">
+          <div *ngFor="let category of categories" class="flex items-center">
+            <input type="checkbox" [id]="'category-' + category.id"
+              class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+              [checked]="selectedCategories.includes(category.id)" (change)="toggleCategory(category.id)">
+            <label [for]="'category-' + category.id" class="ml-2 block text-sm text-gray-700">
+              {{ category.name }}
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reset filters button -->
+      <button
+        class="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50"
+        (click)="resetFilters()" *ngIf="selectedCategories.length > 0 || searchTerm">
+        Limpiar filtros
+      </button>
+    </div>
+
+    <!-- Events grid -->
+    <div class="flex-1">
+      <!-- Admin notice for draft events -->
+      <div *ngIf="isAdmin && totalEvents === 0" class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="w-5 h-5 text-blue-400">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-blue-700">
+              <strong>Nota para administradores:</strong> Si has creado eventos y no aparecen aquí, puede ser que estén
+              en estado "borrador".
+              Para publicarlos, puedes usar el comando: <code
+                class="bg-blue-100 px-1 rounded">php artisan events:publish --all</code>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- No results message -->
+      <div *ngIf="filteredEvents.length === 0 && !isLoading" class="bg-white p-8 rounded-lg shadow text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="w-16 h-16 mx-auto text-gray-400 mb-4">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+        </svg>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">
+          {{ searchTerm || selectedCategories.length > 0 ? 'No se encontraron eventos' : 'No hay eventos disponibles' }}
+        </h3>
+        <p class="text-gray-500 mb-4">
+          {{ searchTerm || selectedCategories.length > 0
+          ? 'Prueba con otros criterios de búsqueda o limpia los filtros.'
+          : 'Aún no hay eventos publicados. ¡Vuelve pronto!' }}
+        </p>
+
+        <div class="space-x-3">
+          <button *ngIf="searchTerm || selectedCategories.length > 0"
+            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
+            (click)="resetFilters()">
+            Ver todos los eventos
+          </button>
+
+          <a *ngIf="isAdmin" routerLink="/events/create"
+            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            Crear primer evento
+          </a>
+        </div>
+      </div>
+
       <!-- Events grid -->
-      <div class="flex-1">
-        <!-- Admin notice for draft events -->
-        <div *ngIf="isAdmin && totalEvents === 0" class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-blue-400">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+      <div *ngIf="filteredEvents.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Event card -->
+        <div *ngFor="let event of filteredEvents" class="bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="h-48 bg-gray-300">
+            <img *ngIf="event.image" [src]="event.image" alt="{{ event.title }}" class="w-full h-full object-cover">
+            <div *ngIf="!event.image" class="w-full h-full flex items-center justify-center bg-gray-200">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-12 h-12 text-gray-400">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
               </svg>
             </div>
-            <div class="ml-3">
-              <p class="text-sm text-blue-700">
-                <strong>Nota para administradores:</strong> Si has creado eventos y no aparecen aquí, puede ser que estén en estado "borrador". 
-                Para publicarlos, puedes usar el comando: <code class="bg-blue-100 px-1 rounded">php artisan events:publish --all</code>
-              </p>
-            </div>
           </div>
-        </div>
-        
-        <!-- No results message -->
-        <div *ngIf="filteredEvents.length === 0 && !isLoading" class="bg-white p-8 rounded-lg shadow text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-gray-400 mb-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
-          </svg>
-          <h3 class="text-lg font-medium text-gray-900 mb-2">
-            {{ searchTerm || selectedCategories.length > 0 ? 'No se encontraron eventos' : 'No hay eventos disponibles' }}
-          </h3>
-          <p class="text-gray-500 mb-4">
-            {{ searchTerm || selectedCategories.length > 0 
-              ? 'Prueba con otros criterios de búsqueda o limpia los filtros.' 
-              : 'Aún no hay eventos publicados. ¡Vuelve pronto!' }}
-          </p>
-          
-          <div class="space-x-3">
-            <button 
-              *ngIf="searchTerm || selectedCategories.length > 0"
-              class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
-              (click)="resetFilters()"
-            >
-              Ver todos los eventos
-            </button>
-            
-            <a 
-              *ngIf="isAdmin" 
-              routerLink="/events/create" 
-              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-            >
-              Crear primer evento
-            </a>
-          </div>
-        </div>
-        
-        <!-- Events grid -->
-        <div *ngIf="filteredEvents.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Event card -->
-          <div *ngFor="let event of filteredEvents" class="bg-white rounded-lg shadow-md overflow-hidden">
-            <div class="h-48 bg-gray-300">
-              <img *ngIf="event.image" [src]="event.image" alt="{{ event.title }}" class="w-full h-full object-cover">
-              <div *ngIf="!event.image" class="w-full h-full flex items-center justify-center bg-gray-200">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-gray-400">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                </svg>
-              </div>
-            </div>
-            
-            <div class="p-4">
-              <!-- Event status badge (for admin) -->
-              <div *ngIf="isAdmin && event.status !== 'published'" class="mb-2">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                      [ngClass]="{
+
+          <div class="p-4">
+            <!-- Event status badge (for admin) -->
+            <div *ngIf="isAdmin && event.status !== 'published'" class="mb-2">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" [ngClass]="{
                         'bg-yellow-100 text-yellow-800': event.status === 'draft',
                         'bg-red-100 text-red-800': event.status === 'cancelled',
                         'bg-gray-100 text-gray-800': event.status === 'completed'
                       }">
-                  {{ getEventStatusLabel(event.status) }}
-                </span>
-              </div>
-              
-              <!-- Categories -->
-              <div class="flex flex-wrap gap-2 mb-2" *ngIf="event.categories && event.categories.length > 0">
-                <span *ngFor="let category of event.categories" 
-                      class="px-2 py-1 text-xs font-medium rounded-full" 
-                      [ngClass]="'bg-' + (category.color || 'blue') + '-100 text-' + (category.color || 'blue') + '-800'">
-                  {{ category.name }}
-                </span>
-              </div>
-              
-              <h3 class="text-lg font-semibold mb-2 truncate">{{ event.title }}</h3>
-              
-              <div class="text-gray-700 prose max-w-none whitespace-pre-line break-words">{{ event.description }}</div>
-              
-              <div class="text-sm text-gray-600 mb-3">
-                <p class="line-clamp-2 overflow-hidden mb-3">{{ event.description }}</p>
+                {{ getEventStatusLabel(event.status) }}
+              </span>
+            </div>
 
-                <div class="flex items-center mb-1">
+            <!-- Categories -->
+            <div class="flex flex-wrap gap-2 mb-2" *ngIf="event.categories && event.categories.length > 0">
+              <span *ngFor="let category of event.categories" class="px-2 py-1 text-xs font-medium rounded-full"
+                [ngClass]="'bg-' + (category.color || 'blue') + '-100 text-' + (category.color || 'blue') + '-800'">
+                {{ category.name }}
+              </span>
+            </div>
+
+            <h3 class="text-lg font-semibold mb-2 truncate">{{ event.title }}</h3>
+
+            <div class="text-gray-700 prose max-w-none whitespace-pre-line break-words">{{ event.description }}</div>
+
+            <div class="text-sm text-gray-600 mb-3">
+              <p class="line-clamp-2 overflow-hidden mb-3">{{ event.description }}</p>
+
+              <div class="flex items-center mb-1">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                   stroke="currentColor" class="w-4 h-4 mr-1 flex-shrink-0">
                   <path stroke-linecap="round" stroke-linejoin="round"
@@ -219,80 +218,85 @@
                 </svg>
                 {{ event.start_date | date:'medium' }}
               </div>
-                
-                <div class="flex items-center mb-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1 flex-shrink-0">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                  </svg>
-                  <span class="truncate">{{ event.location }}</span>
-                </div>
-                
-                <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 01-.75.75h-.75m-6-1.5H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
-                  </svg>
-                  <span *ngIf="event.price > 0">{{ event.price | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
-                  <span *ngIf="event.price === 0">Entrada Libre</span>
-                </div>
+
+              <div class="flex items-center mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-4 h-4 mr-1 flex-shrink-0">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                </svg>
+                <span class="truncate">{{ event.location }}</span>
               </div>
-              
-              <div class="flex justify-between items-center">
-                <span class="text-sm">
-                  <span *ngIf="isEventAvailable(event)">{{ getAvailableTickets(event) }} boletos disponibles</span>
-                  <span *ngIf="!isEventAvailable(event) && event.status === 'published'" class="text-red-600 font-medium">Agotado</span>
-                  <span *ngIf="event.status !== 'published'" class="text-yellow-600 font-medium">{{ getEventStatusLabel(event.status) }}</span>
-                </span>
-                
-                <a [routerLink]="['/events', event.id]" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-                  Ver Detalles
-                </a>
+
+              <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                  stroke="currentColor" class="w-4 h-4 mr-1">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 01-.75.75h-.75m-6-1.5H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                </svg>
+                <span *ngIf="event.price > 0">{{ event.price | currency:'COP':'symbol-narrow':'1.0-0' }}</span>
+                <span *ngIf="event.price === 0">Entrada Libre</span>
               </div>
+            </div>
+
+            <div class="flex justify-between items-center">
+              <span class="text-sm">
+                <span *ngIf="isEventAvailable(event)">{{ getAvailableTickets(event) }} boletos disponibles</span>
+                <span *ngIf="!isEventAvailable(event) && event.status === 'published'"
+                  class="text-red-600 font-medium">Agotado</span>
+                <span *ngIf="event.status !== 'published'" class="text-yellow-600 font-medium">{{
+                  getEventStatusLabel(event.status) }}</span>
+              </span>
+
+              <a [routerLink]="['/events', event.id]"
+                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                Ver Detalles
+              </a>
             </div>
           </div>
         </div>
-        
-        <!-- Pagination -->
-        <div *ngIf="totalPages > 1" class="mt-6 flex justify-center">
-          <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-            <!-- Previous Page -->
-            <button 
-              [disabled]="currentPage === 1"
-              (click)="onPageChange(currentPage - 1)"
-              class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium"
-              [ngClass]="currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'"
-            >
-              <span class="sr-only">Anterior</span>
-              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-              </svg>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="totalPages > 1" class="mt-6 flex justify-center">
+        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+          <!-- Previous Page -->
+          <button [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)"
+            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium"
+            [ngClass]="currentPage === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'">
+            <span class="sr-only">Anterior</span>
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+              aria-hidden="true">
+              <path fill-rule="evenodd"
+                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                clip-rule="evenodd" />
+            </svg>
+          </button>
+
+          <!-- Page numbers -->
+          <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
+            <button (click)="onPageChange(i + 1)"
+              class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium"
+              [ngClass]="currentPage === i + 1 ? 'z-10 bg-primary-50 border-primary-500 text-primary-600' : 'bg-white text-gray-500 hover:bg-gray-50'">
+              {{ i + 1 }}
             </button>
-            
-            <!-- Page numbers -->
-            <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
-              <button 
-                (click)="onPageChange(i + 1)"
-                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium"
-                [ngClass]="currentPage === i + 1 ? 'z-10 bg-primary-50 border-primary-500 text-primary-600' : 'bg-white text-gray-500 hover:bg-gray-50'"
-              >
-                {{ i + 1 }}
-              </button>
-            </ng-container>
-            
-            <!-- Next Page -->
-            <button 
-              [disabled]="currentPage === totalPages"
-              (click)="onPageChange(currentPage + 1)"
-              class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium"
-              [ngClass]="currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'"
-            >
-              <span class="sr-only">Siguiente</span>
-              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-              </svg>
-            </button>
-          </nav>
-        </div>
+          </ng-container>
+
+          <!-- Next Page -->
+          <button [disabled]="currentPage === totalPages" (click)="onPageChange(currentPage + 1)"
+            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium"
+            [ngClass]="currentPage === totalPages ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50'">
+            <span class="sr-only">Siguiente</span>
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+              aria-hidden="true">
+              <path fill-rule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clip-rule="evenodd" />
+            </svg>
+          </button>
+        </nav>
       </div>
     </div>
   </div>
+</div>
